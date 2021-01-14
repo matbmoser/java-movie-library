@@ -15133,3 +15133,43 @@ div.v-layout.v-horizontal.v-widget {
 	-moz-transition: opacity 200ms;
 	transition: opacity 200ms;
 }
+
+.mytheme .v-tabsheet-tabitemcell .v-caption {
+	margin: 10px 0;
+}
+
+.mytheme .v-tabsheet-tabitemcell .v-caption.v-caption:hover {
+	background-color: white;
+	color: #197de1;
+}
+
+.mytheme .v-tabsheet-tabitemcell .v-tabsheet-tabitem-selected .v-caption.v-caption {
+	color: white;
+	background-color: #197de1;
+}
+
+.mytheme .v-tabsheet-tabitemcell .v-caption {
+	margin: 0px 0;
+}
+
+.mytheme .v-tabsheet-tabitemcell .v-caption .v-icon + .v-captiontext {
+	margin: 9px 0;
+}
+
+.mytheme .v-tabsheet-tabitemcell .v-caption .v-icon {
+	margin: 9px 0;
+}
+
+.mytheme .v-tabsheet-tabcontainer {
+	height: 100%;
+}
+
+.mytheme .v-margin-left {
+	padding-left: 44px;
+}
+
+.mytheme .v-tabsheet-tabcontainer {
+	position: fixed;
+	writing-mode: vertical-lr;
+	left: 0;
+}

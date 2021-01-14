@@ -6,17 +6,14 @@ import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Page;
-import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.shared.Position;
-import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.*;
 import org.dis.practica2.grupo6.backend.Lector;
 import org.dis.practica2.grupo6.backend.VDException;
 import org.dis.practica2.grupo6.backend.Videoteca;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,7 +29,7 @@ public class MyUI extends UI {
 
     @Override
     protected void init(VaadinRequest vaadinRequest) {
-        final HorizontalLayout layout = new HorizontalLayout();
+        final VerticalLayout layout = new VerticalLayout();
         layout.setSizeFull();
         final HorizontalLayout gridContainer = new HorizontalLayout();
         final HorizontalLayout importContainer = new HorizontalLayout();
@@ -41,21 +38,7 @@ public class MyUI extends UI {
         TabSheet tabsheet = new TabSheet();
         TextField textField = new TextField();
         List<Videoteca> Videotecas = new ArrayList<>();
-        try {
-            Lector.importar(Videotecas, "peliculas.json");
-            Notification notif = new Notification("<span style='color:green'>Sucess</span>","Videotecas cargadas correctamente ",Notification.Type.HUMANIZED_MESSAGE);
-            notif.setDelayMsec(20000);
-            notif.setHtmlContentAllowed(true);
-            notif.setPosition(Position.BOTTOM_RIGHT);
-            notif.setIcon(VaadinIcons.CHECK);
-            notif.show(Page.getCurrent());
-        }catch(VDException e) {
-            Notification notif = new Notification("Lo sentimos",e.getMessage()+" Intente otra vez...",Notification.Type.WARNING_MESSAGE);
-                    notif.setDelayMsec(20000);
-                    notif.setPosition(Position.TOP_CENTER);
-                    notif.setIcon(VaadinIcons.WARNING);
-                    notif.show(Page.getCurrent());
-        }
+        importar(Videotecas, "peliculas.json");
         Grid<Videoteca> gridVideotecas = new Grid<>();
         gridVideotecas.setItems(Videotecas);
         gridVideotecas.addColumn(Videoteca::getId).setCaption("Id");
@@ -66,10 +49,11 @@ public class MyUI extends UI {
         gridContainer.setSizeFull();
         gridVideotecas.setSizeFull();
         gridContainer.addComponent(gridVideotecas);
-        
-        tabsheet.addTab(gridContainer, "Select", VaadinIcons.EYE);
+
+        tabsheet.addTab(gridContainer, "Select", VaadinIcons.CHECK_SQUARE);
         tabsheet.addTab(importContainer, "Importar", VaadinIcons.UPLOAD);
         tabsheet.addTab(saveContainer, "Guardar", VaadinIcons.DOWNLOAD);
+
         layout.addComponents(tabsheet);
         setContent(layout);
     }
@@ -77,5 +61,24 @@ public class MyUI extends UI {
     @WebServlet(urlPatterns = "/*", name = "MyUIServlet", asyncSupported = true)
     @VaadinServletConfiguration(ui = MyUI.class, productionMode = false)
     public static class MyUIServlet extends VaadinServlet {
+    }
+    //Inicio Función importar
+    public static void importar(List<Videoteca> videotecas, String NOM_FICHERO){
+        try {
+            Lector.importar(videotecas, NOM_FICHERO);
+            Notification notif = new Notification("<span style='color:green'>Sucess</span>","Videotecas cargadas correctamente ",Notification.Type.HUMANIZED_MESSAGE);
+            notif.setDelayMsec(20000);
+            notif.setHtmlContentAllowed(true);
+            notif.setPosition(Position.BOTTOM_RIGHT);
+            notif.setIcon(VaadinIcons.CHECK);
+            notif.show(Page.getCurrent());
+        }catch(VDException e) {
+            Notification notif = new Notification("Lo sentimos",e.getMessage()+" Intente otra vez...",Notification.Type.WARNING_MESSAGE);
+            notif.setDelayMsec(20000);
+            notif.setPosition(Position.TOP_CENTER);
+            notif.setIcon(VaadinIcons.WARNING);
+            notif.show(Page.getCurrent());
+        }
+
     }
 }

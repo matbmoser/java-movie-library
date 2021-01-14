@@ -16,7 +16,7 @@ public class Lector {
         //Instanciamos Gson
         File archivo = new File(NOM_FICHERO);
         if (!archivo.exists()) { //Si no existe
-            throw new VDException("El fichiero no existe!");
+            throw new VDException("El fichero no existe!");
         }
         else { //Si existe
             int num = 0;
@@ -68,7 +68,7 @@ public class Lector {
         }
         return videotecas;
     }
-    public static List<Videoteca> guardar(List<Videoteca> videotecas,String NOM_FICHERO) throws IOException, VDException {
+    public static List<Videoteca> guardar(List<Videoteca> videotecas,String NOM_FICHERO) throws VDException {
 
         //Instanciamos Gson
         Gson gson = new Gson();
@@ -93,16 +93,6 @@ public class Lector {
             //System.out.println("[ERROR] No ha sido posible guardar el fichero\n");
         }
         return videotecas;
-    }
-    public static int getID(List<Videoteca> videotecas, String name){
-        int id = -1;
-        for(int i = 0;i<videotecas.size(); i++){
-            if(videotecas.get(i).getNombre().equals(name)) {
-                id = i;
-                i = videotecas.size();
-            }
-        }
-        return id;
     }
 }
 
