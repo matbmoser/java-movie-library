@@ -1,19 +1,26 @@
 package org.dis.practica2.grupo6.frontend;
 
 import javax.servlet.annotation.WebServlet;
+import javax.sound.midi.MidiMessage;
+import javax.sound.midi.Receiver;
+
 
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.server.Page;
-import com.vaadin.server.VaadinRequest;
-import com.vaadin.server.VaadinServlet;
+import com.vaadin.server.*;
 import com.vaadin.shared.Position;
 import com.vaadin.ui.*;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.TextField;
 import org.dis.practica2.grupo6.backend.Lector;
 import org.dis.practica2.grupo6.backend.VDException;
 import org.dis.practica2.grupo6.backend.Videoteca;
 
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,7 +56,37 @@ public class MyUI extends UI {
         gridContainer.setSizeFull();
         gridVideotecas.setSizeFull();
         gridContainer.addComponent(gridVideotecas);
+        FormLayout form = new FormLayout();
 
+
+        Upload upload = new Upload();
+        upload.setImmediateMode(false);
+        //Bloqueamos el control de errores original, ya que lo realizamos nosotros.
+        upload.setErrorHandler(errorEvent -> {});
+        //Fin bloqueo de errores
+        upload.addStartedListener(startedEvent -> {
+            if(startedEvent.getMIMEType().equals("application/json")){ //Comprobamos si el formato es JSON
+                importar(Videotecas, startedEvent.getFilename());
+            }else if(startedEvent.getFilename().equals("")){ //En el caso que no se importe ningún archivo
+                Notification notif = new Notification("Warning","Ningún archivo seleccionado!",Notification.Type.WARNING_MESSAGE);
+                notif.setDelayMsec(2000);
+                notif.setPosition(Position.TOP_CENTER);
+                notif.setIcon(VaadinIcons.WARNING);
+                notif.show(Page.getCurrent());
+            }
+            else{//En el caso que se importe un archivo no JSON
+                Notification notif = new Notification("Warning","El archivo no tiene formato JSON, Intente otra vez...",Notification.Type.WARNING_MESSAGE);
+                notif.setDelayMsec(2000);
+                notif.setPosition(Position.TOP_CENTER);
+                notif.setIcon(VaadinIcons.WARNING);
+                notif.show(Page.getCurrent());
+            }
+        });
+
+        upload.setButtonCaption("Importar");
+        upload.setAcceptMimeTypes("application/json");
+        form.addComponent(upload);
+        importContainer.addComponent(form);
         tabsheet.addTab(gridContainer, "Select", VaadinIcons.CHECK_SQUARE);
         tabsheet.addTab(importContainer, "Importar", VaadinIcons.UPLOAD);
         tabsheet.addTab(saveContainer, "Guardar", VaadinIcons.DOWNLOAD);
@@ -65,13 +102,22 @@ public class MyUI extends UI {
     //Inicio Función importar
     public static void importar(List<Videoteca> videotecas, String NOM_FICHERO){
         try {
+            int oldSize = videotecas.size();
             Lector.importar(videotecas, NOM_FICHERO);
-            Notification notif = new Notification("<span style='color:green'>Sucess</span>","Videotecas cargadas correctamente ",Notification.Type.HUMANIZED_MESSAGE);
-            notif.setDelayMsec(20000);
-            notif.setHtmlContentAllowed(true);
-            notif.setPosition(Position.BOTTOM_RIGHT);
-            notif.setIcon(VaadinIcons.CHECK);
-            notif.show(Page.getCurrent());
+            if((videotecas.size() - oldSize) == 0){
+                Notification notif = new Notification("Error", "Estas videotecas ya están añadidas!W",Notification.Type.ERROR_MESSAGE);
+                notif.setDelayMsec(20000);
+                notif.setPosition(Position.TOP_CENTER);
+                notif.setIcon(VaadinIcons.CROSS_CUTLERY);
+                notif.show(Page.getCurrent());
+            }else {
+                Notification notif = new Notification("<span style='color:green'>Sucess</span>", "[" + (videotecas.size() - oldSize) + "] Videotecas cargadas correctamente ", Notification.Type.HUMANIZED_MESSAGE);
+                notif.setDelayMsec(10000);
+                notif.setHtmlContentAllowed(true);
+                notif.setPosition(Position.BOTTOM_RIGHT);
+                notif.setIcon(VaadinIcons.CHECK);
+                notif.show(Page.getCurrent());
+            }
         }catch(VDException e) {
             Notification notif = new Notification("Lo sentimos",e.getMessage()+" Intente otra vez...",Notification.Type.WARNING_MESSAGE);
             notif.setDelayMsec(20000);

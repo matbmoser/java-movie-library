@@ -1,17 +1,15 @@
 package org.dis.practica2.grupo6.backend;
 
 import com.google.gson.*;
-import com.google.gson.reflect.TypeToken;
 
 import java.io.*;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 public class Lector {
 
-    public static List<Videoteca> importar(List<Videoteca> videotecas, String NOM_FICHERO) throws VDException { //Parsea el documento json si existe
+    public static void importar(List<Videoteca> videotecas, String NOM_FICHERO) throws VDException { //Parsea el documento json si existe
 
         //Instanciamos Gson
         File archivo = new File(NOM_FICHERO);
@@ -56,8 +54,12 @@ public class Lector {
                     }
                     videoteca.setPeliculas(peliculas); //Añadimos las peliculas
                     videoteca.setFecha(jsonElementoV.getAsJsonObject().get("fecha_ultima_actualizacion").getAsString());
-                    videotecas.add(videoteca);
-                    videoteca.setId(videotecas.size());
+                    if(find(videotecas, videoteca)) {
+                        throw new VDException("Videotecas Iguales");
+                    }else{
+                        videotecas.add(videoteca);
+                        videoteca.setId(videotecas.size());
+                    }
                     num++; //Añadimos una videoteca más
                 }
                 //System.out.println("[Videotecas Importadas] " + num + " Videotecas importadas correctamente");
@@ -66,7 +68,6 @@ public class Lector {
                 //System.out.println("[ERROR] No ha sido posible añadir las videotecas por estructura incorrecta\n");
             }
         }
-        return videotecas;
     }
     public static List<Videoteca> guardar(List<Videoteca> videotecas,String NOM_FICHERO) throws VDException {
 
@@ -93,6 +94,14 @@ public class Lector {
             //System.out.println("[ERROR] No ha sido posible guardar el fichero\n");
         }
         return videotecas;
+    }
+    public static boolean find(List<Videoteca> videotecas, Videoteca videoteca){
+        for (Videoteca value : videotecas) {
+            if (value.getNombre().equals(videoteca.getNombre()) && value.getUbicacion().equals(videoteca.getUbicacion()) && value.getGeneros().equals(videoteca.getGeneros()) && value.getPeliculas().equals(videoteca.getPeliculas())) {
+                return true;
+            }
+        }
+        return false;
     }
 }
 
