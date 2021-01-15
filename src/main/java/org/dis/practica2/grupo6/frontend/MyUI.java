@@ -66,6 +66,7 @@ public class MyUI extends UI {
         upload.setErrorHandler(errorEvent -> {});
         //Fin bloqueo de errores
         upload.addStartedListener(startedEvent -> {
+
             if(startedEvent.getMIMEType().equals("application/json")){ //Comprobamos si el formato es JSON
                 importar(Videotecas, startedEvent.getFilename());
             }else if(startedEvent.getFilename().equals("")){ //En el caso que no se importe ningún archivo
@@ -82,6 +83,7 @@ public class MyUI extends UI {
                 notif.setIcon(VaadinIcons.WARNING);
                 notif.show(Page.getCurrent());
             }
+            upload.setAcceptMimeTypes("application/json");
         });
 
         upload.setButtonCaption("Importar");
