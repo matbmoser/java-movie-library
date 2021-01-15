@@ -55,6 +55,13 @@ public class MyUI extends UI {
         gridVideotecas.addColumn(Videoteca::getFecha).setCaption("Modified");
         gridContainer.setSizeFull();
         gridVideotecas.setSizeFull();
+        gridVideotecas.addItemClickListener(e -> {
+            Notification notif = new Notification("SELECTED","ID: "+e.getItem().getId(),Notification.Type.WARNING_MESSAGE);
+            notif.setDelayMsec(2000);
+            notif.setPosition(Position.TOP_CENTER);
+            notif.setIcon(VaadinIcons.WARNING);
+            notif.show(Page.getCurrent());
+        });
         gridContainer.addComponent(gridVideotecas);
         FormLayout form = new FormLayout();
 
@@ -83,7 +90,6 @@ public class MyUI extends UI {
                 notif.setIcon(VaadinIcons.WARNING);
                 notif.show(Page.getCurrent());
             }
-            upload.setAcceptMimeTypes("application/json");
         });
 
         upload.setButtonCaption("Importar");
