@@ -54,9 +54,7 @@ public class Lector {
                     }
                     videoteca.setPeliculas(peliculas); //Añadimos las peliculas
                     videoteca.setFecha(jsonElementoV.getAsJsonObject().get("fecha_ultima_actualizacion").getAsString());
-                    if(find(videotecas, videoteca)) {
-                        throw new VDException("Videotecas Iguales");
-                    }else{
+                    if(!find(videotecas, videoteca)) {
                         videotecas.add(videoteca);
                         videoteca.setId(videotecas.size());
                     }
@@ -64,7 +62,7 @@ public class Lector {
                 }
                 //System.out.println("[Videotecas Importadas] " + num + " Videotecas importadas correctamente");
             } catch (Exception e) { //Si se produce un error de parseo lo captamos
-                throw new VDException("Estructura Incorrecta");
+                throw new VDException(e.getMessage());
                 //System.out.println("[ERROR] No ha sido posible añadir las videotecas por estructura incorrecta\n");
             }
         }
@@ -97,7 +95,7 @@ public class Lector {
     }
     public static boolean find(List<Videoteca> videotecas, Videoteca videoteca){
         for (Videoteca value : videotecas) {
-            if (value.getNombre().equals(videoteca.getNombre()) && value.getUbicacion().equals(videoteca.getUbicacion()) && value.getGeneros().equals(videoteca.getGeneros()) && value.getPeliculas().equals(videoteca.getPeliculas())) {
+            if (value.getNombre().equals(videoteca.getNombre()) && value.getUbicacion().equals(videoteca.getUbicacion())) {
                 return true;
             }
         }

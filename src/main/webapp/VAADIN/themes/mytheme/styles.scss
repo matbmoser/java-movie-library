@@ -78,6 +78,7 @@
       .v-caption.v-caption {
         color: white;
         background-color: #197de1;
+        border-color: transparent;
       }
     }
   }
@@ -99,7 +100,13 @@
   .v-margin-left {
     padding-left: 44px;
   }
-  .v-tabsheet-tabcontainer{
+  .v-upload {
+    .v-button {
+      margin-left: 15px;
+      vertical-align: middle;
+    }
+  }
+    .v-tabsheet-tabcontainer{
     position: fixed;
     writing-mode: vertical-lr;
     left: 0;

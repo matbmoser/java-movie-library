@@ -60,6 +60,7 @@ public class MyUI extends UI {
 
 
         Upload upload = new Upload();
+        upload.setSizeFull();
         upload.setImmediateMode(false);
         //Bloqueamos el control de errores original, ya que lo realizamos nosotros.
         upload.setErrorHandler(errorEvent -> {});
@@ -105,10 +106,10 @@ public class MyUI extends UI {
             int oldSize = videotecas.size();
             Lector.importar(videotecas, NOM_FICHERO);
             if((videotecas.size() - oldSize) == 0){
-                Notification notif = new Notification("Error", "Estas videotecas ya están añadidas!W",Notification.Type.ERROR_MESSAGE);
+                Notification notif = new Notification("Error", "Estas videotecas ya están añadidas!",Notification.Type.ERROR_MESSAGE);
                 notif.setDelayMsec(20000);
                 notif.setPosition(Position.TOP_CENTER);
-                notif.setIcon(VaadinIcons.CROSS_CUTLERY);
+                notif.setIcon(VaadinIcons.EXCLAMATION);
                 notif.show(Page.getCurrent());
             }else {
                 Notification notif = new Notification("<span style='color:green'>Sucess</span>", "[" + (videotecas.size() - oldSize) + "] Videotecas cargadas correctamente ", Notification.Type.HUMANIZED_MESSAGE);

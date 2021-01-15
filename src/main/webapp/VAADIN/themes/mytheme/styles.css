@@ -15146,6 +15146,7 @@ div.v-layout.v-horizontal.v-widget {
 .mytheme .v-tabsheet-tabitemcell .v-tabsheet-tabitem-selected .v-caption.v-caption {
 	color: white;
 	background-color: #197de1;
+	border-color: transparent;
 }
 
 .mytheme .v-tabsheet-tabitemcell .v-caption {
@@ -15166,6 +15167,11 @@ div.v-layout.v-horizontal.v-widget {
 
 .mytheme .v-margin-left {
 	padding-left: 44px;
+}
+
+.mytheme .v-upload .v-button {
+	margin-left: 15px;
+	vertical-align: middle;
 }
 
 .mytheme .v-tabsheet-tabcontainer {
