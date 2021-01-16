@@ -1,22 +1,30 @@
 package org.dis.practica2.grupo6.backend;
 
-import junit.framework.TestCase;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
-public class LectorTest extends TestCase {
+import static org.junit.Assert.*;
 
+public class LectorTest {
+
+    @Before
     public void setUp() throws Exception {
-        super.setUp();
     }
 
+    @After
     public void tearDown() throws Exception {
     }
 
-    public void testImportar() {
+    @Test
+    public void importar() {
     }
 
-    public void testGuardar() {
+    @Test
+    public void guardar() {
     }
 
-    public void testFind() {
+    @Test
+    public void find() {
     }
 }
