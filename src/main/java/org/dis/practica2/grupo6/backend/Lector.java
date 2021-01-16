@@ -17,7 +17,6 @@ public class Lector {
             throw new VDException("El fichero no existe!");
         }
         else { //Si existe
-            int num = 0;
             try { //Probamos parsear el documento
                 JsonElement Jsonobj = JsonParser.parseReader(new FileReader(NOM_FICHERO));
                 JsonObject jsonObject = Jsonobj.getAsJsonObject();
@@ -58,12 +57,9 @@ public class Lector {
                         videotecas.add(videoteca);
                         videoteca.setId(videotecas.size());
                     }
-                    num++; //Añadimos una videoteca más
                 }
-                //System.out.println("[Videotecas Importadas] " + num + " Videotecas importadas correctamente");
             } catch (Exception e) { //Si se produce un error de parseo lo captamos
                 throw new VDException(e.getMessage());
-                //System.out.println("[ERROR] No ha sido posible añadir las videotecas por estructura incorrecta\n");
             }
         }
     }
@@ -72,7 +68,6 @@ public class Lector {
         //Instanciamos Gson
         Gson gson = new Gson();
         String nombre = NOM_FICHERO;
-        Scanner sc = new Scanner(System.in); //Creamos un scanner de consola
         //Pasamos el objeto java a un string json
         boolean b = false;
         String misvideotecas = gson.toJson(videotecas);
@@ -85,14 +80,13 @@ public class Lector {
                 //Si se añade
             }catch (Exception e){
                 throw new VDException("Error al escribir fichero", e.getCause());
-                //System.out.println("[ERROR] No ha sido posible guardar el fichero\n");
             }
         }catch (Exception e){
             throw new VDException("¡El fichero no existe!", e.getCause());
-            //System.out.println("[ERROR] No ha sido posible guardar el fichero\n");
         }
         return videotecas;
     }
+    //Función responsable de verificar si una videoteca ya ha sido añadida o no independientemente de la ID
     public static boolean find(List<Videoteca> videotecas, Videoteca videoteca){
         for (Videoteca value : videotecas) {
             if (value.getNombre().equals(videoteca.getNombre()) && value.getUbicacion().equals(videoteca.getUbicacion())) {
