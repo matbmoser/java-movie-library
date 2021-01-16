@@ -68,7 +68,6 @@ public class Lector {
         //Instanciamos Gson
         Gson gson = new Gson();
         String nombre = NOM_FICHERO;
-        Scanner sc = new Scanner(System.in); //Creamos un scanner de consola
         //Pasamos el objeto java a un string json
         boolean b = false;
         String misvideotecas = gson.toJson(videotecas);

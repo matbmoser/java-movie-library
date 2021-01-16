@@ -106,12 +106,44 @@ public class MyUI extends UI {
         Button save = new Button("Guardar");
         Upload saveArchivo = new Upload();
         saveArchivo.setButtonCaption("Guardar");
+        //Bloqueamos el control de errores original, ya que lo realizamos nosotros.
+        saveArchivo.setErrorHandler(errorEvent -> {});
         saveArchivo.setCaption("Seleccione un Archivo para Guardar");
         saveArchivo.setAcceptMimeTypes("application/json");
         saveArchivo.setImmediateMode(false);
+        saveArchivo.addStartedListener(startedEvent -> {
+
+            if(startedEvent.getMIMEType().equals("application/json")){ //Comprobamos si el formato es JSON
+                guardar(Videotecas, startedEvent.getFilename());
+            }else if(startedEvent.getFilename().equals("")){ //En el caso que no se importe ningún archivo
+                Notification notif = new Notification("Warning","Ningún archivo seleccionado!",Notification.Type.WARNING_MESSAGE);
+                notif.setDelayMsec(2000);
+                notif.setPosition(Position.TOP_CENTER);
+                notif.setIcon(VaadinIcons.WARNING);
+                notif.show(Page.getCurrent());
+            }
+            else{//En el caso que se importe un archivo no JSON
+                Notification notif = new Notification("Warning","El archivo no tiene formato JSON, Intente otra vez...",Notification.Type.WARNING_MESSAGE);
+                notif.setDelayMsec(2000);
+                notif.setPosition(Position.TOP_CENTER);
+                notif.setIcon(VaadinIcons.WARNING);
+                notif.show(Page.getCurrent());
+            }
+        });
         TextField nombreFich = new TextField();
         nombreFich.setCaption("Crear un fichero:");
         nombreFich.setPlaceholder("Nombre del Fichero");
+        save.addClickListener(e->{
+            if(nombreFich.isEmpty()){
+                Notification notif = new Notification("Warning","Ningún nombre de archivo seleccionado!",Notification.Type.WARNING_MESSAGE);
+                notif.setDelayMsec(2000);
+                notif.setPosition(Position.TOP_CENTER);
+                notif.setIcon(VaadinIcons.WARNING);
+                notif.show(Page.getCurrent());
+            }else{
+                guardar(Videotecas, nombreFich.getValue() + ".json");
+            }
+        });
         form2.addComponents(nombreFich,save);
             ListSelect<String> select = new ListSelect<>("Elige una opción de guardado: ");
 
@@ -173,8 +205,32 @@ public class MyUI extends UI {
             notif.setIcon(VaadinIcons.WARNING);
             notif.show(Page.getCurrent());
         }
+    }
+    public static void guardar(List<Videoteca> videotecas, String NOM_FICHERO) {
+        try {
+            if (videotecas.size() > 0) {
+                Lector.guardar(videotecas, NOM_FICHERO);
+                Notification notif = new Notification("<span style='color:green'>Sucess</span>", "["+NOM_FICHERO+"] Añadido Correctamente", Notification.Type.HUMANIZED_MESSAGE);
+                notif.setDelayMsec(10000);
+                notif.setHtmlContentAllowed(true);
+                notif.setPosition(Position.BOTTOM_RIGHT);
+                notif.setIcon(VaadinIcons.CHECK);
+                notif.show(Page.getCurrent());
+            } else {
+                Notification notif = new Notification("Error", "No hay videotecas para añadir!", Notification.Type.ERROR_MESSAGE);
+                notif.setDelayMsec(20000);
+                notif.setPosition(Position.TOP_CENTER);
+                notif.setIcon(VaadinIcons.EXCLAMATION);
+                notif.show(Page.getCurrent());
+            }
 
-
+        } catch (VDException e) {
+            Notification notif = new Notification("Lo sentimos", e.getMessage() + " Intente otra vez...", Notification.Type.WARNING_MESSAGE);
+            notif.setDelayMsec(20000);
+            notif.setPosition(Position.TOP_CENTER);
+            notif.setIcon(VaadinIcons.WARNING);
+            notif.show(Page.getCurrent());
+        }
     }
 
 }
