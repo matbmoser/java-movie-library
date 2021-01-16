@@ -96,10 +96,12 @@ public class MyUI extends UI {
         importContainer.addComponent(form);
         FormLayout form2 = new FormLayout();
         Upload save = new Upload();
+        save.setButtonCaption("Guardar");
         save.setId("saveDirectorio");
         save.setCaption("Seleccione un directorio");
         save.setImmediateMode(false);
         Upload saveArchivo = new Upload();
+        saveArchivo.setButtonCaption("Guardar");
         saveArchivo.setCaption("Seleccione un Archivo para Guardar");
         saveArchivo.setAcceptMimeTypes("application/json");
         TextField nombreFich = new TextField();
