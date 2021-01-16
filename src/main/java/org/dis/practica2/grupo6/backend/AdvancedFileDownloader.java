@@ -235,7 +235,6 @@ public class AdvancedFileDownloader extends FileDownloader {
             if (isOverrideContentType()) {
                 stream.setContentType("application/octet-stream;charset=UTF-8");
             }
-
         } finally {
             session.unlock();
         }

@@ -41,8 +41,10 @@ import java.util.Set;
 @JavaScript("https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js")
 @StyleSheet("https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css")
 @JavaScript("https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js")
+@SuppressWarnings("serial")
 @Theme("mytheme")
 public class MyUI extends UI {
+    private boolean isDownloaded;
     @Override
     protected void init(VaadinRequest vaadinRequest) {
         Page.getCurrent().setTitle("Gestor de Videotecas");
@@ -145,6 +147,8 @@ public class MyUI extends UI {
                 guardar(Videotecas, nombreFich.getValue() + ".json");
                 String NOM_FICHERO = nombreFich.getValue()+".json";
                 Button downloadButton = new Button("Download File");
+                downloadButton.setIcon(VaadinIcons.DOWNLOAD);
+                isDownloaded = false;
                 final AdvancedFileDownloader downloader = new AdvancedFileDownloader();
                 downloader.addAdvancedDownloaderListener(new AdvancedFileDownloader.AdvancedDownloaderListener() {
 
@@ -158,18 +162,31 @@ public class MyUI extends UI {
                             public void beforeDownload(AdvancedFileDownloader.DownloaderEvent downloadEvent) {
 
                                 String filePath = NOM_FICHERO;
-                                downloader.setFilePath("/"+filePath);
-
-                                Notification notif = new Notification("Generando Fichero","Descargando: "+ filePath.substring(filePath.lastIndexOf("/")),Notification.Type.HUMANIZED_MESSAGE);
-                                notif.setDelayMsec(2000);
-                                notif.setPosition(Position.BOTTOM_LEFT);
-                                notif.setIcon(VaadinIcons.SPINNER);
-                                notif.show(Page.getCurrent());
+                                downloader.setFilePath(filePath);
                             }
 
                         });
-
                 downloader.extend(downloadButton);
+                downloadButton.addClickListener(event ->{
+                    Notification notif = new Notification("Generando Fichero","Descargando: "+ NOM_FICHERO,Notification.Type.HUMANIZED_MESSAGE);
+                    notif.setDelayMsec(2000);
+                    notif.setPosition(Position.BOTTOM_LEFT);
+                    notif.setIcon(VaadinIcons.SPINNER);
+                    notif.show(Page.getCurrent());
+                    Thread thread = new Thread(){
+                        public void run(){
+                            try {
+                                Thread.sleep(10000);
+                            } catch (InterruptedException interruptedException) {
+                                interruptedException.printStackTrace();
+                            }
+                            new File(NOM_FICHERO).delete();
+                        }
+                    };
+                    optContainer.removeAllComponents();
+                    optContainer.addComponents(form2);
+                    thread.start();
+                });
                 optContainer.addComponent(downloadButton);
             }
         });
