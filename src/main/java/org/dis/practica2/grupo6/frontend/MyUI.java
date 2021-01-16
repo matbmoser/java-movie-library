@@ -1,26 +1,29 @@
 package org.dis.practica2.grupo6.frontend;
 
+import javax.lang.model.type.TypeMirror;
 import javax.servlet.annotation.WebServlet;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
 
-
-import com.vaadin.annotations.Theme;
-import com.vaadin.annotations.VaadinServletConfiguration;
+import com.vaadin.annotations.*;
+import com.vaadin.annotations.JavaScript;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.*;
 import com.vaadin.shared.Position;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.TextField;
 import org.dis.practica2.grupo6.backend.Lector;
 import org.dis.practica2.grupo6.backend.VDException;
 import org.dis.practica2.grupo6.backend.Videoteca;
 
+
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.lang.annotation.Annotation;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,11 +36,16 @@ import java.util.Set;
  * The UI is initialized using {@link #init(VaadinRequest)}. This method is intended to be 
  * overridden to add component to the user interface and initialize non-component functionality.
  */
+@JavaScript("https://code.jquery.com/jquery-3.5.1.slim.min.js")
+@JavaScript("https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js")
+@StyleSheet("https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css")
+@JavaScript("https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js")
 @Theme("mytheme")
 public class MyUI extends UI {
-
     @Override
     protected void init(VaadinRequest vaadinRequest) {
+        Page.getCurrent().setTitle("Gestor de Videotecas");
+
         final VerticalLayout layout = new VerticalLayout();
         layout.setSizeFull();
         final HorizontalLayout gridContainer = new HorizontalLayout();
@@ -95,19 +103,16 @@ public class MyUI extends UI {
         form.addComponent(upload);
         importContainer.addComponent(form);
         FormLayout form2 = new FormLayout();
-        Upload save = new Upload();
-        save.setButtonCaption("Guardar");
-        save.setId("saveDirectorio");
-        save.setCaption("Seleccione un directorio");
-        save.setImmediateMode(false);
+        Button save = new Button("Guardar");
         Upload saveArchivo = new Upload();
         saveArchivo.setButtonCaption("Guardar");
         saveArchivo.setCaption("Seleccione un Archivo para Guardar");
         saveArchivo.setAcceptMimeTypes("application/json");
+        saveArchivo.setImmediateMode(false);
         TextField nombreFich = new TextField();
         nombreFich.setCaption("Crear un fichero:");
         nombreFich.setPlaceholder("Nombre del Fichero");
-
+        form2.addComponents(nombreFich,save);
             ListSelect<String> select = new ListSelect<>("Elige una opción de guardado: ");
 
             select.setItems("Nuevo Fichero", "Fichero Existente");
@@ -115,18 +120,20 @@ public class MyUI extends UI {
             select.setRows(2);
             select.select("Nuevo Fichero");
             optContainer.removeAllComponents();
-            optContainer.addComponents(nombreFich, save);
             select.addValueChangeListener(event -> {
                 if (event.getValue().toString().equals("[Nuevo Fichero]")) {
                     optContainer.removeAllComponents();
-                    optContainer.addComponents(nombreFich, save);
+                    optContainer.addComponents(form2);
 
                 }else{
                     optContainer.removeAllComponents();
                     optContainer.addComponents(saveArchivo);
                 }
-            });
 
+            });
+        // Shorthand
+        // Execute JavaScript in the currently processed page
+        optContainer.addComponent(form2);
         saveContainer.addComponents(select, optContainer);
         tabsheet.addTab(gridContainer, "Select", VaadinIcons.CHECK_SQUARE);
         tabsheet.addTab(importContainer, "Importar", VaadinIcons.UPLOAD);
@@ -169,4 +176,5 @@ public class MyUI extends UI {
 
 
     }
+
 }
