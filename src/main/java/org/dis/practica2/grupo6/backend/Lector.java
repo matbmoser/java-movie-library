@@ -80,11 +80,9 @@ public class Lector {
                 //Si se añade
             }catch (Exception e){
                 throw new VDException("Error al escribir fichero", e.getCause());
-                //System.out.println("[ERROR] No ha sido posible guardar el fichero\n");
             }
         }catch (Exception e){
             throw new VDException("¡El fichero no existe!", e.getCause());
-            //System.out.println("[ERROR] No ha sido posible guardar el fichero\n");
         }
         return videotecas;
     }

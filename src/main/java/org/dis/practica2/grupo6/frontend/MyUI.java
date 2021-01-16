@@ -14,6 +14,7 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.TextField;
+import org.dis.practica2.grupo6.backend.AdvancedFileDownloader;
 import org.dis.practica2.grupo6.backend.Lector;
 import org.dis.practica2.grupo6.backend.VDException;
 import org.dis.practica2.grupo6.backend.Videoteca;
@@ -142,6 +143,34 @@ public class MyUI extends UI {
                 notif.show(Page.getCurrent());
             }else{
                 guardar(Videotecas, nombreFich.getValue() + ".json");
+                String NOM_FICHERO = nombreFich.getValue()+".json";
+                Button downloadButton = new Button("Download File");
+                final AdvancedFileDownloader downloader = new AdvancedFileDownloader();
+                downloader.addAdvancedDownloaderListener(new AdvancedFileDownloader.AdvancedDownloaderListener() {
+
+                            /**
+                             * This method will be invoked just before the download
+                             * starts. Thus, a new file path can be set.
+                             *
+                             * @param downloadEvent
+                             */
+                            @Override
+                            public void beforeDownload(AdvancedFileDownloader.DownloaderEvent downloadEvent) {
+
+                                String filePath = NOM_FICHERO;
+                                downloader.setFilePath("/"+filePath);
+
+                                Notification notif = new Notification("Generando Fichero","Descargando: "+ filePath.substring(filePath.lastIndexOf("/")),Notification.Type.HUMANIZED_MESSAGE);
+                                notif.setDelayMsec(2000);
+                                notif.setPosition(Position.BOTTOM_LEFT);
+                                notif.setIcon(VaadinIcons.SPINNER);
+                                notif.show(Page.getCurrent());
+                            }
+
+                        });
+
+                downloader.extend(downloadButton);
+                optContainer.addComponent(downloadButton);
             }
         });
         form2.addComponents(nombreFich,save);
