@@ -21,8 +21,10 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * This UI is the application entry point. A UI may either represent a browser window 
@@ -41,7 +43,7 @@ public class MyUI extends UI {
         final HorizontalLayout gridContainer = new HorizontalLayout();
         final HorizontalLayout importContainer = new HorizontalLayout();
         final HorizontalLayout saveContainer = new HorizontalLayout();
-        final VerticalLayout formContainer = new VerticalLayout();
+        final VerticalLayout optContainer = new VerticalLayout();
         TabSheet tabsheet = new TabSheet();
         TextField textField = new TextField();
         List<Videoteca> Videotecas = new ArrayList<>();
@@ -83,11 +85,43 @@ public class MyUI extends UI {
                 notif.show(Page.getCurrent());
             }
         });
-
+        upload.setCaptionAsHtml(true);
         upload.setButtonCaption("Importar");
         upload.setAcceptMimeTypes("application/json");
         form.addComponent(upload);
         importContainer.addComponent(form);
+        FormLayout form2 = new FormLayout();
+        Upload save = new Upload();
+        save.setId("saveDirectorio");
+        save.setCaption("Seleccione un directorio");
+        save.setImmediateMode(false);
+        Upload saveArchivo = new Upload();
+        saveArchivo.setCaption("Seleccione un Archivo para Guardar");
+        saveArchivo.setAcceptMimeTypes("application/json");
+        TextField nombreFich = new TextField();
+        nombreFich.setCaption("Crear un fichero:");
+        nombreFich.setPlaceholder("Nombre del Fichero");
+
+            ListSelect<String> select = new ListSelect<>("Elige una opción de guardado: ");
+
+            select.setItems("Nuevo Fichero", "Fichero Existente");
+
+            select.setRows(2);
+            select.select("Nuevo Fichero");
+            optContainer.removeAllComponents();
+            optContainer.addComponents(nombreFich, save);
+            select.addValueChangeListener(event -> {
+                if (event.getValue().toString().equals("[Nuevo Fichero]")) {
+                    optContainer.removeAllComponents();
+                    optContainer.addComponents(nombreFich, save);
+
+                }else{
+                    optContainer.removeAllComponents();
+                    optContainer.addComponents(saveArchivo);
+                }
+            });
+
+        saveContainer.addComponents(select, optContainer);
         tabsheet.addTab(gridContainer, "Select", VaadinIcons.CHECK_SQUARE);
         tabsheet.addTab(importContainer, "Importar", VaadinIcons.UPLOAD);
         tabsheet.addTab(saveContainer, "Guardar", VaadinIcons.DOWNLOAD);
