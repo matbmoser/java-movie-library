@@ -1,0 +1,56 @@
+{
+  "videotecas": [
+    {
+      "nombre": "UFV Video",
+      "ubicacion": "Pozuelo de Alarcón",
+      "peliculas": [
+        {
+          "id": 644117698,
+          "titulo": "Tres Hombres en Marte",
+          "sinopsis": "Tres hombres acaban cayendo en suelo de marte despues de estrellarse con su nave",
+          "reparto": [
+            {
+              "nombre": "Jorge Clunney",
+              "URL_Wiki": "https://wikipedia.es/Jorge-Clunney"
+            }
+          ],
+          "atributos": {
+            "min_dur": 120,
+            "ano_estreno": 2021
+          },
+          "genero": "Scifi",
+          "enlaceIMDB": "https://imdb.com/tres-hombres-en-marte"
+        }
+      ],
+      "fecha_ultima_actualizacion": "24/11/2020"
+    },
+    {
+      "nombre": "VideoShow Madrid",
+      "ubicacion": "Madrid, Ciudad",
+      "peliculas": [
+        {
+          "id": 1851691492,
+          "titulo": "Vidas Pasadas",
+          "sinopsis": "Dos personas descubren que estuvieron casados en sus vidas pasadas y empiezan un romance",
+          "reparto": [
+            {
+              "nombre": "Maria Lopez",
+              "URL_Wiki": "https:/wikipedia.es/maria-lopez"
+            },
+            {
+              "nombre": "Johnson Martinez",
+              "URL_Wiki": "https://wikipedia.com/johnson-martinez"
+            }
+          ],
+          "atributos": {
+            "min_dur": 90,
+            "ano_estreno": 2022
+          },
+          "genero": "Romance",
+          "enlaceIMDB": "https://imdb.com/idas-asdas"
+        }
+      ],
+      "fecha_ultima_actualizacion": "24/11/2020"
+    }
+  ]
+}

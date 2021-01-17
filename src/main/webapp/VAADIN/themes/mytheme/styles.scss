@@ -1,0 +1,114 @@
+@import "mytheme.scss";
+@import "addons.scss";
+
+// This file prefixes all rules with the theme name to avoid causing conflicts with other themes.
+// The actual styles should be defined in mytheme.scss
+
+.mytheme {
+  @include addons;
+  @include mytheme;
+  .v-Notification {
+    .v-Notification-description {
+      vertical-align: text-top !important;
+    }
+  }
+  .v-Notification.warning{
+       padding-right: 59px;
+     }
+  .v-Notification.warning:after{
+    content: "\00d7";
+    font-size: 1.5em;
+    position: absolute;
+    top: 50%;
+    margin-top: -12px;
+    right: 12px;
+    width: 25px;
+    height: 25px;
+    line-height: 24px;
+    cursor: pointer;
+    color: #000;
+    opacity: 0.5;
+    filter: alpha(opacity=50);
+    text-align: center;
+    border: 1px solid #000;
+    border-color: rgba(0, 0, 0, 0.3);
+    border-radius: 50%;
+    -webkit-transition: opacity 200ms;
+    -moz-transition: opacity 200ms;
+    transition: opacity 200ms;
+  }
+  .v-Notification.humanized{
+    padding-right: 59px;
+  }
+  .v-Notification.humanized:after{
+    content: "\00d7";
+    font-size: 1.5em;
+    position: absolute;
+    top: 50%;
+    margin-top: -12px;
+    right: 12px;
+    width: 25px;
+    height: 25px;
+    line-height: 24px;
+    cursor: pointer;
+    color: #000;
+    opacity: 0.5;
+    filter: alpha(opacity=50);
+    text-align: center;
+    border: 1px solid #000;
+    border-color: rgba(0, 0, 0, 0.3);
+    border-radius: 50%;
+    -webkit-transition: opacity 200ms;
+    -moz-transition: opacity 200ms;
+    transition: opacity 200ms;
+  }
+  .v-tabsheet-tabitemcell{
+    .v-caption{
+      margin: 10px 0;
+    }
+  }
+  .v-tabsheet-tabitemcell {
+    .v-caption.v-caption:hover {
+      background-color: white;
+      color: #197de1;
+    }
+  }
+  .v-tabsheet-tabitemcell {
+    .v-tabsheet-tabitem-selected {
+      .v-caption.v-caption {
+        color: white;
+        background-color: #197de1;
+        border-color: transparent;
+      }
+    }
+  }
+
+  .v-tabsheet-tabitemcell {
+    .v-caption {
+      .v-icon + .v-captiontext {
+        margin: 9px 0;
+      }
+      .v-icon{
+        margin: 9px 0;
+      }
+      margin: 0px 0;
+    }
+  }
+  .v-tabsheet-tabcontainer{
+    height: 100%;
+  }
+  .v-margin-left {
+    padding-left: 44px;
+  }
+  .v-upload {
+    .v-button {
+      margin-left: 15px;
+      vertical-align: middle;
+    }
+  }
+    .v-tabsheet-tabcontainer{
+    position: fixed;
+    writing-mode: vertical-lr;
+    left: 0;
+  }
+}
