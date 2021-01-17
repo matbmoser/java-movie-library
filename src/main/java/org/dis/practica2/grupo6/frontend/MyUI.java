@@ -66,7 +66,15 @@ public class MyUI extends UI {
         gridContainer.setSizeFull();
         gridVideotecas.setSizeFull();
         gridVideotecas.addItemClickListener(e -> {
-           //select(Videotecas, e.getItem().getId());
+            try {
+                select(vaadinRequest,e.getItem().getId()-1,Videotecas);
+            } catch (VDException exception) {
+                Notification notif = new Notification("Lo sentimos",exception.getMessage()+" Intente otra vez...",Notification.Type.WARNING_MESSAGE);
+                notif.setDelayMsec(20000);
+                notif.setPosition(Position.TOP_CENTER);
+                notif.setIcon(VaadinIcons.WARNING);
+                notif.show(Page.getCurrent());
+            }
         });
         gridContainer.addComponent(gridVideotecas);
         FormLayout form = new FormLayout();
@@ -240,7 +248,7 @@ public class MyUI extends UI {
         setContent(layout);
     }
     private void select(VaadinRequest vaadinRequest, int id, List<Videoteca> videotecas) throws VDException {
-        if(id > 0){
+        if(id < 0){
             throw new VDException("La Videoteca seleccionada no es válida!");
         }else{
             try{
