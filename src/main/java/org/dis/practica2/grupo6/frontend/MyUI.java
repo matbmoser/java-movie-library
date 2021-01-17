@@ -172,24 +172,24 @@ public class MyUI extends UI {
                         });
                 downloader.extend(downloadButton);
                 downloadButton.addClickListener(event ->{
-                    Notification notif = new Notification("Generando Fichero","Descargando: "+ NOM_FICHERO,Notification.Type.HUMANIZED_MESSAGE);
-                    notif.setDelayMsec(2000);
-                    notif.setPosition(Position.BOTTOM_LEFT);
-                    notif.setIcon(VaadinIcons.SPINNER);
-                    notif.show(Page.getCurrent());
-                    Thread thread = new Thread(){
-                        public void run(){
+                        Notification notif = new Notification("Generando Fichero", "Descargando: " + NOM_FICHERO+ " en 10 segundos se borrará", Notification.Type.HUMANIZED_MESSAGE);
+                        notif.setDelayMsec(2000);
+                        notif.setPosition(Position.BOTTOM_LEFT);
+                        notif.setIcon(VaadinIcons.SPINNER);
+                        notif.show(Page.getCurrent());
+                        //Creamos un hilo que será responsable de borrar el archivo creado despues de 10000 milisegundos
+                        Thread thread = new Thread(() -> {
                             try {
                                 Thread.sleep(10000);
+                                new File(NOM_FICHERO).delete();
+
                             } catch (InterruptedException interruptedException) {
-                                interruptedException.printStackTrace();
+                                new File(NOM_FICHERO).delete();
                             }
-                            new File(NOM_FICHERO).delete();
-                        }
-                    };
-                    optContainer.removeAllComponents();
-                    optContainer.addComponents(form2);
-                    thread.start();
+                            optContainer.removeAllComponents();
+                            optContainer.addComponent(form2);
+                        });
+                        thread.start();
                 });
                 optContainer.addComponent(downloadButton);
             }
