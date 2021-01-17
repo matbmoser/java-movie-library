@@ -14,10 +14,7 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.TextField;
-import org.dis.practica2.grupo6.backend.AdvancedFileDownloader;
-import org.dis.practica2.grupo6.backend.Lector;
-import org.dis.practica2.grupo6.backend.VDException;
-import org.dis.practica2.grupo6.backend.Videoteca;
+import org.dis.practica2.grupo6.backend.*;
 
 
 import java.awt.*;
@@ -29,6 +26,7 @@ import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
 /**
  * This UI is the application entry point. A UI may either represent a browser window 
@@ -44,7 +42,6 @@ import java.util.Set;
 @SuppressWarnings("serial")
 @Theme("mytheme")
 public class MyUI extends UI {
-    private boolean isDownloaded;
     @Override
     protected void init(VaadinRequest vaadinRequest) {
         Page.getCurrent().setTitle("Gestor de Videotecas");
@@ -148,7 +145,6 @@ public class MyUI extends UI {
                 String NOM_FICHERO = nombreFich.getValue()+".json";
                 Button downloadButton = new Button("Download File");
                 downloadButton.setIcon(VaadinIcons.DOWNLOAD);
-                isDownloaded = false;
                 final AdvancedFileDownloader downloader = new AdvancedFileDownloader();
                 downloader.addAdvancedDownloaderListener(new AdvancedFileDownloader.AdvancedDownloaderListener() {
 
@@ -224,6 +220,39 @@ public class MyUI extends UI {
     @WebServlet(urlPatterns = "/*", name = "MyUIServlet", asyncSupported = true)
     @VaadinServletConfiguration(ui = MyUI.class, productionMode = false)
     public static class MyUIServlet extends VaadinServlet {
+    }
+    private void peliculas(Videoteca videoteca, VaadinRequest vaadinRequest){
+        final VerticalLayout layout = new VerticalLayout();
+        layout.setSizeFull();
+        final HorizontalLayout gridContainer = new HorizontalLayout();
+        List<Pelicula> peliculas = videoteca.getPeliculas();
+        Grid<Pelicula> gridPeliculas = new Grid<>();
+        gridPeliculas.setItems(peliculas);
+        gridPeliculas.addColumn(Pelicula::getId).setCaption("Id");
+        gridPeliculas.addColumn(Pelicula::getTitulo).setCaption("Titulo");
+        gridPeliculas.addColumn(Pelicula::getSinopsis).setCaption("Sinopsis");
+        gridPeliculas.addColumn(Pelicula::getGenero).setCaption("Género");
+        gridPeliculas.addColumn(Pelicula::getEnlace).setCaption("Enlace");
+        gridContainer.setSizeFull();
+        gridPeliculas.setSizeFull();
+        gridContainer.addComponent(gridPeliculas);
+        layout.addComponents(gridContainer);
+        setContent(layout);
+    }
+    private void select(VaadinRequest vaadinRequest, int id, List<Videoteca> videotecas) throws VDException {
+        if(id > 0){
+            throw new VDException("La Videoteca seleccionada no es válida!");
+        }else{
+            try{
+                if(videotecas.get(id) != null){
+                    peliculas(videotecas.get(id), vaadinRequest);
+                }else{
+                    throw new VDException("La Videoteca seleccionada no existe!");
+                }
+            }catch (Exception e){
+                throw new VDException("La Videoteca seleccionada no existe!");
+            }
+        }
     }
     //Inicio Función importar
     public static void importar(List<Videoteca> videotecas, String NOM_FICHERO){
