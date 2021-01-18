@@ -229,10 +229,14 @@ public class MyUI extends UI {
     @VaadinServletConfiguration(ui = MyUI.class, productionMode = false)
     public static class MyUIServlet extends VaadinServlet {
     }
+    //Añade el layout de peliculas
     private void peliculas(Videoteca videoteca, VaadinRequest vaadinRequest){
+        Page.getCurrent().setTitle("Videoteca: "+videoteca.getNombre());
         final VerticalLayout layout = new VerticalLayout();
         layout.setSizeFull();
         final HorizontalLayout gridContainer = new HorizontalLayout();
+        final HorizontalLayout addContainer = new HorizontalLayout();
+        final HorizontalLayout returnContainer = new HorizontalLayout();
         List<Pelicula> peliculas = videoteca.getPeliculas();
         Grid<Pelicula> gridPeliculas = new Grid<>();
         gridPeliculas.setItems(peliculas);
@@ -244,7 +248,19 @@ public class MyUI extends UI {
         gridContainer.setSizeFull();
         gridPeliculas.setSizeFull();
         gridContainer.addComponent(gridPeliculas);
-        layout.addComponents(gridContainer);
+        gridContainer.setCaption("Ver");
+        addContainer.setCaption("Añadir");
+        returnContainer.setCaption("Volver");
+        TabSheet tabpelis = new TabSheet();
+        tabpelis.addTab(gridContainer, "Ver", VaadinIcons.CHECK_SQUARE);
+        tabpelis.addTab(addContainer, "Añadir", VaadinIcons.PLUS);
+        tabpelis.addTab(returnContainer, "Volver", VaadinIcons.ARROW_LEFT);
+        tabpelis.addSelectedTabChangeListener(listener->{
+            if(listener.getTabSheet().getSelectedTab().getCaption().equals("Volver")){
+                init(vaadinRequest);
+            }
+        });
+        layout.addComponents(tabpelis);
         setContent(layout);
     }
     private void select(VaadinRequest vaadinRequest, int id, List<Videoteca> videotecas) throws VDException {
