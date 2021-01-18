@@ -1,6 +1,7 @@
 package org.dis.practica2.grupo6.backend;
 
 import com.google.gson.*;
+import com.vaadin.server.FileResource;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -94,6 +95,16 @@ public class Lector {
             }
         }
         return false;
+    }
+    public static void createFichero(String content, String NOM_FICHERO) throws VDException {
+            File file = new File("/tmp/uploads/"+NOM_FICHERO);
+            try(FileWriter writer = new FileWriter(file, false);
+                BufferedWriter bw = new BufferedWriter(writer)){
+                bw.write(content);
+                //Si se añade
+            }catch (Exception e){
+                throw new VDException("Error al escribir fichero");
+            }
     }
 }
 

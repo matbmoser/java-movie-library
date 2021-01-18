@@ -3,8 +3,8 @@ package org.dis.practica2.grupo6.frontend;
 import javax.lang.model.type.TypeMirror;
 import javax.servlet.annotation.WebServlet;
 import javax.sound.midi.MidiMessage;
-import javax.sound.midi.Receiver;
 
+import com.sun.org.apache.xalan.internal.xsltc.compiler.Parser;
 import com.vaadin.annotations.*;
 import com.vaadin.annotations.JavaScript;
 import com.vaadin.icons.VaadinIcons;
@@ -13,20 +13,22 @@ import com.vaadin.shared.Position;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
 import org.dis.practica2.grupo6.backend.*;
 
 
 import java.awt.*;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.awt.TextArea;
+import java.io.*;
 import java.lang.annotation.Annotation;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
+
+import static org.dis.practica2.grupo6.backend.Lector.createFichero;
 
 /**
  * This UI is the application entry point. A UI may either represent a browser window 
@@ -78,15 +80,17 @@ public class MyUI extends UI {
         });
         gridContainer.addComponent(gridVideotecas);
         FormLayout form = new FormLayout();
-
-
+        // Implement both receiver that saves upload in a file and
+        // listener for successful upload
         Upload upload = new Upload();
         upload.setSizeFull();
         upload.setImmediateMode(false);
         //Bloqueamos el control de errores original, ya que lo realizamos nosotros.
         upload.setErrorHandler(errorEvent -> {});
+        // Show uploaded file in this placeholder
+
         //Fin bloqueo de errores
-        upload.addStartedListener(startedEvent -> {
+        upload.addFinishedListener(startedEvent -> {
 
             if(startedEvent.getMIMEType().equals("application/json")){ //Comprobamos si el formato es JSON
                 importar(Videotecas, startedEvent.getFilename());
@@ -121,22 +125,71 @@ public class MyUI extends UI {
         saveArchivo.setImmediateMode(false);
         saveArchivo.addStartedListener(startedEvent -> {
 
-            if(startedEvent.getMIMEType().equals("application/json")){ //Comprobamos si el formato es JSON
-                guardar(Videotecas, startedEvent.getFilename());
-            }else if(startedEvent.getFilename().equals("")){ //En el caso que no se importe ningún archivo
-                Notification notif = new Notification("Warning","Ningún archivo seleccionado!",Notification.Type.WARNING_MESSAGE);
-                notif.setDelayMsec(2000);
-                notif.setPosition(Position.TOP_CENTER);
-                notif.setIcon(VaadinIcons.WARNING);
-                notif.show(Page.getCurrent());
-            }
-            else{//En el caso que se importe un archivo no JSON
-                Notification notif = new Notification("Warning","El archivo no tiene formato JSON, Intente otra vez...",Notification.Type.WARNING_MESSAGE);
-                notif.setDelayMsec(2000);
-                notif.setPosition(Position.TOP_CENTER);
-                notif.setIcon(VaadinIcons.WARNING);
-                notif.show(Page.getCurrent());
-            }
+            if(startedEvent.getMIMEType().equals("application/json")) { //Comprobamos si el formato es JSON
+                if (Videotecas.size() <= 0) {
+                    Notification notif = new Notification("Error", "No hay videotecas para guardar!", Notification.Type.ERROR_MESSAGE);
+                    notif.setDelayMsec(20000);
+                    notif.setPosition(Position.TOP_CENTER);
+                    notif.setIcon(VaadinIcons.EXCLAMATION);
+                    notif.show(Page.getCurrent());
+                } else {
+                    guardar(Videotecas, startedEvent.getFilename());
+                    String NOM_FICHERO = startedEvent.getFilename();
+                    Button downloadButton = new Button("Download File");
+                    downloadButton.setIcon(VaadinIcons.DOWNLOAD);
+                    final AdvancedFileDownloader downloader = new AdvancedFileDownloader();
+                    downloader.addAdvancedDownloaderListener(new AdvancedFileDownloader.AdvancedDownloaderListener() {
+
+                        /**
+                         * This method will be invoked just before the download
+                         * starts. Thus, a new file path can be set.
+                         *
+                         * @param downloadEvent
+                         */
+                        @Override
+                        public void beforeDownload(AdvancedFileDownloader.DownloaderEvent downloadEvent) {
+
+                            String filePath = NOM_FICHERO;
+                            downloader.setFilePath(filePath);
+                        }
+
+                    });
+                    downloader.extend(downloadButton);
+                    downloadButton.addClickListener(event -> {
+                        Notification notif = new Notification("Guardando en Fichero", "Descargando: " + NOM_FICHERO + " en 10 segundos se borrará", Notification.Type.HUMANIZED_MESSAGE);
+                        notif.setDelayMsec(2000);
+                        notif.setPosition(Position.BOTTOM_LEFT);
+                        notif.setIcon(VaadinIcons.SPINNER);
+                        notif.show(Page.getCurrent());
+                        //Creamos un hilo que será responsable de borrar el archivo creado despues de 10000 milisegundos
+                        Thread thread = new Thread(() -> {
+                            try {
+                                Thread.sleep(10000);
+                                new File(NOM_FICHERO).delete();
+
+                            } catch (InterruptedException interruptedException) {
+                                new File(NOM_FICHERO).delete();
+                            }
+                            optContainer.removeAllComponents();
+                            optContainer.addComponent(form2);
+                        });
+                        thread.start();
+                    });
+                    optContainer.addComponent(downloadButton);
+                    }
+                }else if (startedEvent.getFilename().equals("")) { //En el caso que no se importe ningún archivo
+                    Notification notif = new Notification("Warning", "Ningún archivo seleccionado!", Notification.Type.WARNING_MESSAGE);
+                    notif.setDelayMsec(2000);
+                    notif.setPosition(Position.TOP_CENTER);
+                    notif.setIcon(VaadinIcons.WARNING);
+                    notif.show(Page.getCurrent());
+                } else {//En el caso que se importe un archivo no JSON
+                    Notification notif = new Notification("Warning", "El archivo no tiene formato JSON, Intente otra vez...", Notification.Type.WARNING_MESSAGE);
+                    notif.setDelayMsec(2000);
+                    notif.setPosition(Position.TOP_CENTER);
+                    notif.setIcon(VaadinIcons.WARNING);
+                    notif.show(Page.getCurrent());
+                }
         });
         TextField nombreFich = new TextField();
         nombreFich.setCaption("Crear un fichero:");
@@ -148,7 +201,14 @@ public class MyUI extends UI {
                 notif.setPosition(Position.TOP_CENTER);
                 notif.setIcon(VaadinIcons.WARNING);
                 notif.show(Page.getCurrent());
-            }else{
+            }else if(Videotecas.size() <= 0){
+                Notification notif = new Notification("Error", "No hay videotecas para guardar!", Notification.Type.ERROR_MESSAGE);
+                notif.setDelayMsec(20000);
+                notif.setPosition(Position.TOP_CENTER);
+                notif.setIcon(VaadinIcons.EXCLAMATION);
+                notif.show(Page.getCurrent());
+            }
+            else{
                 guardar(Videotecas, nombreFich.getValue() + ".json");
                 String NOM_FICHERO = nombreFich.getValue()+".json";
                 Button downloadButton = new Button("Download File");
@@ -234,9 +294,12 @@ public class MyUI extends UI {
         Page.getCurrent().setTitle("Videoteca: "+videoteca.getNombre());
         final VerticalLayout layout = new VerticalLayout();
         layout.setSizeFull();
+        layout.setResponsive(true);
         final HorizontalLayout gridContainer = new HorizontalLayout();
         final HorizontalLayout addContainer = new HorizontalLayout();
         final HorizontalLayout returnContainer = new HorizontalLayout();
+        final HorizontalLayout actoresContainer = new HorizontalLayout();
+        gridContainer.setCaption("Ver");
         List<Pelicula> peliculas = videoteca.getPeliculas();
         Grid<Pelicula> gridPeliculas = new Grid<>();
         gridPeliculas.setItems(peliculas);
@@ -244,16 +307,87 @@ public class MyUI extends UI {
         gridPeliculas.addColumn(Pelicula::getTitulo).setCaption("Titulo");
         gridPeliculas.addColumn(Pelicula::getSinopsis).setCaption("Sinopsis");
         gridPeliculas.addColumn(Pelicula::getGenero).setCaption("Género");
+        gridPeliculas.addColumn(Pelicula::getActores).setCaption("Actores");
         gridPeliculas.addColumn(Pelicula::getEnlace).setCaption("Enlace");
         gridContainer.setSizeFull();
-        gridPeliculas.setSizeFull();
         gridContainer.addComponent(gridPeliculas);
-        gridContainer.setCaption("Ver");
-        addContainer.setCaption("Añadir");
+        Label titulo = new Label("Añadir una pelicula:");
+        TextField tituloP = new TextField();
+        tituloP.setPlaceholder("Titulo");
+        com.vaadin.ui.TextArea sinopsisP = new com.vaadin.ui.TextArea();
+        sinopsisP.setRows(4);
+        sinopsisP.setPlaceholder("Sinopsis");
+        TextField genero = new TextField();
+        genero.setPlaceholder("Género");
+        TextField min = new TextField();
+        min.setCaption("Atributos:");
+        min.setPlaceholder("Minutos de Duración");
+        min.setId("minutos");
+        com.vaadin.ui.JavaScript.getCurrent().execute("document.getElementById('minutos').setAttribute('type', 'number')");
+        TextField ano = new TextField();
+        ano.setPlaceholder("Año de estreno");
+        ano.setId("anos");
+        com.vaadin.ui.JavaScript.getCurrent().execute("document.getElementById('anos').setAttribute('type', 'number')");
+        TextField enlace = new TextField();
+        enlace.setPlaceholder("Enlace");
+        TextField numActores = new TextField();
+        numActores.setPlaceholder("Número de Actores");
+        numActores.setValue("1");
+        numActores.setId("numActores");
+        com.vaadin.ui.JavaScript.getCurrent().execute("document.getElementById('numActores').setAttribute('type', 'number')");
+        List<Actor> actores = new ArrayList<>();
+        List<HorizontalLayout> lista = new ArrayList<>();
+        HorizontalLayout actorForm = new HorizontalLayout();
+        actorForm.setCaption("Actor 1");
+        TextField nomActor = new TextField();
+        nomActor.setPlaceholder("Nombre Actor");
+        TextField enlaceActor = new TextField();
+        enlaceActor.setPlaceholder("Enlace Wikipedia");
+        actoresContainer.setResponsive(true);
+        actorForm.addComponents(nomActor, enlaceActor);
+        numActores.addValueChangeListener(e ->{
+            try{
+                int num = Integer.parseInt(numActores.getValue());
+                if(num > 0 && num < 20) {
+                    actoresContainer.removeAllComponents();
+                    lista.clear();
+                    for (int i = 0; i < num; i++) {
+                        HorizontalLayout actorForm1 = new HorizontalLayout();
+                        actorForm1.setCaption("Actor "+ (i+1));
+                        TextField nomActor1 = new TextField();
+                        nomActor1.setPlaceholder("Nombre Actor");
+                        TextField enlaceActor1 = new TextField();
+                        enlaceActor1.setPlaceholder("Enlace Wikipedia");
+                        actorForm1.addComponents(nomActor1, enlaceActor1);
+                        lista.add(actorForm1);
+                    }
+                    for(HorizontalLayout a : lista){
+                        actoresContainer.addComponent(a);
+                    }
+                }else{
+                    Notification notif = new Notification("Warning","El valor debe estar entre 1 y 20",Notification.Type.WARNING_MESSAGE);
+                    notif.setDelayMsec(1000);
+                    notif.setPosition(Position.TOP_CENTER);
+                    notif.setIcon(VaadinIcons.WARNING);
+                    notif.show(Page.getCurrent());
+                }
+            }catch(Exception exception){
+                Notification notif = new Notification("Warning","No se admiten caracteres!",Notification.Type.WARNING_MESSAGE);
+                notif.setDelayMsec(1000);
+                notif.setPosition(Position.TOP_CENTER);
+                notif.setIcon(VaadinIcons.WARNING);
+                notif.show(Page.getCurrent());
+            }
+        });
+        actoresContainer.addComponents(actorForm);
+        addContainer.addComponents(titulo,tituloP, sinopsisP, genero, min, ano, enlace, numActores);
+        addContainer.setSizeFull();
+        VerticalLayout formulario = new VerticalLayout();
+        formulario.addComponents(addContainer, actoresContainer);
         returnContainer.setCaption("Volver");
         TabSheet tabpelis = new TabSheet();
         tabpelis.addTab(gridContainer, "Ver", VaadinIcons.CHECK_SQUARE);
-        tabpelis.addTab(addContainer, "Añadir", VaadinIcons.PLUS);
+        tabpelis.addTab(formulario, "Añadir", VaadinIcons.PLUS);
         tabpelis.addTab(returnContainer, "Volver", VaadinIcons.ARROW_LEFT);
         tabpelis.addSelectedTabChangeListener(listener->{
             if(listener.getTabSheet().getSelectedTab().getCaption().equals("Volver")){

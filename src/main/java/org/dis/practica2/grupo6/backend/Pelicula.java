@@ -71,6 +71,14 @@ public class Pelicula {
         return reparto;
     }
 
+    public String getActores(){
+        StringBuilder actores = null;
+        for (int i = 0; i < reparto.size(); i++) {
+            actores.insert(i,reparto.get(i).nombre);
+        }
+        return actores.toString();
+    }
+
     public void setReparto(List<Actor> reparto) {
         this.reparto = reparto;
     }
