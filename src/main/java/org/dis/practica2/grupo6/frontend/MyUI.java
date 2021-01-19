@@ -389,7 +389,8 @@ public class MyUI extends UI {
             }
         });
         actoresContainer.addComponents(actorForm);
-        addContainer.addComponents(titulo,tituloP, sinopsisP, genero,enlace,min, ano, numActores);
+        Button addButton = new Button("Añadir Pelicula");
+        addContainer.addComponents(titulo,tituloP, sinopsisP, genero,enlace,min, ano, numActores,addButton);
         HorizontalLayout formulario = new HorizontalLayout();
         formulario.addComponents(addContainer, actoresContainer);
         formulario.setSizeFull();
