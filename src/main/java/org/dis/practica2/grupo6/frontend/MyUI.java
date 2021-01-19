@@ -350,6 +350,7 @@ public class MyUI extends UI {
         enlaceActor.setPlaceholder("Enlace Wikipedia");
         actoresContainer.setResponsive(true);
         actorForm.addComponents(nomActor, enlaceActor);
+        lista.add(actorForm);
         numActores.addValueChangeListener(e ->{
             try{
                 int num = Integer.parseInt(numActores.getValue());
@@ -390,6 +391,47 @@ public class MyUI extends UI {
         });
         actoresContainer.addComponents(actorForm);
         Button addButton = new Button("Añadir Pelicula");
+        addButton.addClickListener(click->{
+            int camposValidos = 0;
+            if(tituloP.getValue().isEmpty()){
+                tituloP.setIcon(VaadinIcons.WARNING);
+                tituloP.setStyleName("fail");
+            }else{
+                tituloP.setIcon(VaadinIcons.CHECK);
+                tituloP.setStyleName("sucess");
+                camposValidos++;
+            }
+            if(sinopsisP.getValue().isEmpty()){
+                sinopsisP.setIcon(VaadinIcons.WARNING);
+                sinopsisP.setStyleName("fail");
+            }else{
+                sinopsisP.setIcon(VaadinIcons.CHECK);
+                sinopsisP.setStyleName("sucess");
+                camposValidos++;
+            }
+            if(enlace.getValue().isEmpty()){
+                enlace.setIcon(VaadinIcons.WARNING);
+                enlace.setStyleName("fail");
+            }else{
+                enlace.setIcon(VaadinIcons.CHECK);
+                enlace.setStyleName("sucess");
+                camposValidos++;
+            }
+            if(enlace.getValue().isEmpty()){
+                enlace.setIcon(VaadinIcons.WARNING);
+                enlace.setStyleName("fail");
+            }else{
+                enlace.setIcon(VaadinIcons.CHECK);
+                enlace.setStyleName("sucess");
+                camposValidos++;
+            }
+
+
+
+
+
+
+        });
         addContainer.addComponents(titulo,tituloP, sinopsisP, genero,enlace,min, ano, numActores,addButton);
         HorizontalLayout formulario = new HorizontalLayout();
         formulario.addComponents(addContainer, actoresContainer);

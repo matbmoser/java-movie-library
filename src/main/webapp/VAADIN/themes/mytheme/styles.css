@@ -15138,6 +15138,14 @@ div.v-layout.v-horizontal.v-widget {
 	margin: 10px 0;
 }
 
+.mytheme .fail {
+	border: 1px solid red;
+}
+
+.mytheme .sucess {
+	border: 1px solid green;
+}
+
 .mytheme .scrollable {
 	overflow: auto;
 }

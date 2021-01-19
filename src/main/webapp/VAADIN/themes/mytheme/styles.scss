@@ -67,6 +67,12 @@
       margin: 10px 0;
     }
   }
+  .fail{
+    border: 1px solid red;
+  }
+  .sucess{
+    border: 1px solid green;
+  }
   .scrollable {
     overflow: auto;
   }
