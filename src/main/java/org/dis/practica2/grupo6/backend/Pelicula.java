@@ -72,9 +72,13 @@ public class Pelicula {
     }
 
     public String getActores(){
-        StringBuilder actores = null;
-        for (int i = 0; i < reparto.size(); i++) {
-            actores.insert(i,reparto.get(i).nombre);
+        String actores = "";
+        for(int i=0; i < reparto.size();i++){
+           if(i == 0){
+                actores = reparto.get(i).nombre;
+            }else{
+                actores = actores + ", " + reparto.get(i).nombre;
+            }
         }
         return actores.toString();
     }

@@ -294,11 +294,14 @@ public class MyUI extends UI {
         Page.getCurrent().setTitle("Videoteca: "+videoteca.getNombre());
         final VerticalLayout layout = new VerticalLayout();
         layout.setSizeFull();
+        layout.addStyleName("scrollable");
         layout.setResponsive(true);
         final HorizontalLayout gridContainer = new HorizontalLayout();
-        final HorizontalLayout addContainer = new HorizontalLayout();
+        final VerticalLayout addContainer = new VerticalLayout();
+        addContainer.addStyleName("scrollable");
         final HorizontalLayout returnContainer = new HorizontalLayout();
-        final HorizontalLayout actoresContainer = new HorizontalLayout();
+        final VerticalLayout actoresContainer = new VerticalLayout();
+        actoresContainer.addStyleName("scrollable");
         gridContainer.setCaption("Ver");
         List<Pelicula> peliculas = videoteca.getPeliculas();
         Grid<Pelicula> gridPeliculas = new Grid<>();
@@ -310,6 +313,7 @@ public class MyUI extends UI {
         gridPeliculas.addColumn(Pelicula::getActores).setCaption("Actores");
         gridPeliculas.addColumn(Pelicula::getEnlace).setCaption("Enlace");
         gridContainer.setSizeFull();
+        gridPeliculas.setSizeFull();
         gridContainer.addComponent(gridPeliculas);
         Label titulo = new Label("Añadir una pelicula:");
         TextField tituloP = new TextField();
@@ -319,6 +323,8 @@ public class MyUI extends UI {
         sinopsisP.setPlaceholder("Sinopsis");
         TextField genero = new TextField();
         genero.setPlaceholder("Género");
+        TextField enlace = new TextField();
+        enlace.setPlaceholder("Enlace");
         TextField min = new TextField();
         min.setCaption("Atributos:");
         min.setPlaceholder("Minutos de Duración");
@@ -328,16 +334,15 @@ public class MyUI extends UI {
         ano.setPlaceholder("Año de estreno");
         ano.setId("anos");
         com.vaadin.ui.JavaScript.getCurrent().execute("document.getElementById('anos').setAttribute('type', 'number')");
-        TextField enlace = new TextField();
-        enlace.setPlaceholder("Enlace");
         TextField numActores = new TextField();
+        numActores.setCaption("[1-20] Actores");
         numActores.setPlaceholder("Número de Actores");
         numActores.setValue("1");
         numActores.setId("numActores");
         com.vaadin.ui.JavaScript.getCurrent().execute("document.getElementById('numActores').setAttribute('type', 'number')");
         List<Actor> actores = new ArrayList<>();
-        List<HorizontalLayout> lista = new ArrayList<>();
-        HorizontalLayout actorForm = new HorizontalLayout();
+        List<VerticalLayout> lista = new ArrayList<>();
+        VerticalLayout actorForm = new VerticalLayout();
         actorForm.setCaption("Actor 1");
         TextField nomActor = new TextField();
         nomActor.setPlaceholder("Nombre Actor");
@@ -348,11 +353,11 @@ public class MyUI extends UI {
         numActores.addValueChangeListener(e ->{
             try{
                 int num = Integer.parseInt(numActores.getValue());
-                if(num > 0 && num < 20) {
+                if(num > 0 && num <= 20) {
                     actoresContainer.removeAllComponents();
                     lista.clear();
                     for (int i = 0; i < num; i++) {
-                        HorizontalLayout actorForm1 = new HorizontalLayout();
+                        VerticalLayout actorForm1 = new VerticalLayout();
                         actorForm1.setCaption("Actor "+ (i+1));
                         TextField nomActor1 = new TextField();
                         nomActor1.setPlaceholder("Nombre Actor");
@@ -361,7 +366,7 @@ public class MyUI extends UI {
                         actorForm1.addComponents(nomActor1, enlaceActor1);
                         lista.add(actorForm1);
                     }
-                    for(HorizontalLayout a : lista){
+                    for(VerticalLayout a : lista){
                         actoresContainer.addComponent(a);
                     }
                 }else{
@@ -370,27 +375,31 @@ public class MyUI extends UI {
                     notif.setPosition(Position.TOP_CENTER);
                     notif.setIcon(VaadinIcons.WARNING);
                     notif.show(Page.getCurrent());
+                    actoresContainer.removeAllComponents();
+                    actoresContainer.addComponents(actorForm);
                 }
             }catch(Exception exception){
-                Notification notif = new Notification("Warning","No se admiten caracteres!",Notification.Type.WARNING_MESSAGE);
+                Notification notif = new Notification("Warning","No se admiten caracteres o que este vacio!",Notification.Type.WARNING_MESSAGE);
                 notif.setDelayMsec(1000);
                 notif.setPosition(Position.TOP_CENTER);
                 notif.setIcon(VaadinIcons.WARNING);
                 notif.show(Page.getCurrent());
+                actoresContainer.removeAllComponents();
+                actoresContainer.addComponents(actorForm);
             }
         });
         actoresContainer.addComponents(actorForm);
-        addContainer.addComponents(titulo,tituloP, sinopsisP, genero, min, ano, enlace, numActores);
-        addContainer.setSizeFull();
-        VerticalLayout formulario = new VerticalLayout();
+        addContainer.addComponents(titulo,tituloP, sinopsisP, genero,enlace,min, ano, numActores);
+        HorizontalLayout formulario = new HorizontalLayout();
         formulario.addComponents(addContainer, actoresContainer);
+        formulario.setSizeFull();
         returnContainer.setCaption("Volver");
         TabSheet tabpelis = new TabSheet();
         tabpelis.addTab(gridContainer, "Ver", VaadinIcons.CHECK_SQUARE);
         tabpelis.addTab(formulario, "Añadir", VaadinIcons.PLUS);
         tabpelis.addTab(returnContainer, "Volver", VaadinIcons.ARROW_LEFT);
         tabpelis.addSelectedTabChangeListener(listener->{
-            if(listener.getTabSheet().getSelectedTab().getCaption().equals("Volver")){
+            if(tabpelis.getSelectedTab().getCaption().equals("Volver")){
                 init(vaadinRequest);
             }
         });

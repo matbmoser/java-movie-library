@@ -15138,6 +15138,10 @@ div.v-layout.v-horizontal.v-widget {
 	margin: 10px 0;
 }
 
+.mytheme .scrollable {
+	overflow: auto;
+}
+
 .mytheme .v-tabsheet-tabitemcell .v-caption.v-caption:hover {
 	background-color: white;
 	color: #197de1;

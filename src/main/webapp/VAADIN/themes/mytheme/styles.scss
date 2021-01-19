@@ -67,6 +67,9 @@
       margin: 10px 0;
     }
   }
+  .scrollable {
+    overflow: auto;
+  }
   .v-tabsheet-tabitemcell {
     .v-caption.v-caption:hover {
       background-color: white;
