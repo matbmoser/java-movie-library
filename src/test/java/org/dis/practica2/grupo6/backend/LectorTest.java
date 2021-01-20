@@ -60,8 +60,25 @@ public class LectorTest {
 
             throw new VDException("Se produjo un error de parseo");
     }
-    @Test
-    public void guardar() {
+
+    @Test(expected = VDException.class)
+    public void guardarUnFicheroNoJSON() throws VDException {
+//Añadimos una videoteca
+        List<Videoteca> videotecas = new ArrayList<>();
+        List<Pelicula> peliculas = new ArrayList<>();
+        List<Actor> reparto = new ArrayList<>();
+        reparto.add(new Actor("Jennifer Rosenbert", "http:wikihow.com/jenny_rosenbert"));
+        reparto.add(new Actor("Maria Disibali", "http:wikihow.com/disibali_mary"));
+        reparto.add(new Actor("Mateo de la Papa", "http:wikihow.com/mateo_de_la_papa"));
+        peliculas.add(new Pelicula(this.hashCode(),"Mucho Mucho 2","Una pelicula no para cualquiera", reparto, new Atributos(120, 2020), "Comedia","http://imdb.com/tas542121512"));
+        peliculas.add(new Pelicula(this.hashCode(),"Mucho Mucho 1","Una pelicula no para cualquier2", reparto, new Atributos(50, 2020), "Comedia","http://imdb.com/tas542121512"));
+        videotecas.add(new Videoteca(1,"La hueca tuerta", "Madrid", peliculas, "04/02/2020"));
+
+        Lector.guardar(videotecas,"Readme.txt");
+        expectedEx.expect(VDException.class);
+        expectedEx.expectMessage("El fichero no es un .json");
+
+        throw new VDException("El fichero no es un .json");
     }
 
     @Test
