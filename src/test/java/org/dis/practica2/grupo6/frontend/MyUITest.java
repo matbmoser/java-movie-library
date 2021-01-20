@@ -33,7 +33,7 @@ public class MyUITest {
     }
 
     @Test(expected = VDException.class)
-    public void select() throws VDException {
+    public void selectpeliculanoexistente() throws VDException {
         MyUI ui = new MyUI();
         VaadinRequest vaadinRequest = new VaadinRequest() {
 
