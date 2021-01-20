@@ -67,6 +67,15 @@
       margin: 10px 0;
     }
   }
+  .fail{
+    border: 1px solid red;
+  }
+  .sucess{
+    border: 1px solid green;
+  }
+  .scrollable {
+    overflow: auto;
+  }
   .v-tabsheet-tabitemcell {
     .v-caption.v-caption:hover {
       background-color: white;
@@ -81,6 +90,11 @@
         border-color: transparent;
       }
     }
+  }
+  .delete{
+    color: #fff;
+    background: #dc3545!important;
+    border-color: #dc3545;
   }
 
   .v-tabsheet-tabitemcell {
