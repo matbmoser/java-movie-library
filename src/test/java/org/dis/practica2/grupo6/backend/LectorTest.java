@@ -13,14 +13,6 @@ import static org.junit.Assert.*;
 
 public class LectorTest {
 
-    @Before
-    public void setUp() throws Exception {
-    }
-
-    @After
-    public void tearDown() throws Exception {
-    }
-
     @Test
     public void importarVideotecaConMasVideotecasCreadas() {
 
@@ -63,7 +55,7 @@ public class LectorTest {
 
     @Test(expected = VDException.class)
     public void guardarUnFicheroNoJSON() throws VDException {
-//Añadimos una videoteca
+        //Añadimos una videoteca
         List<Videoteca> videotecas = new ArrayList<>();
         List<Pelicula> peliculas = new ArrayList<>();
         List<Actor> reparto = new ArrayList<>();
@@ -73,13 +65,15 @@ public class LectorTest {
         peliculas.add(new Pelicula(this.hashCode(),"Mucho Mucho 2","Una pelicula no para cualquiera", reparto, new Atributos(120, 2020), "Comedia","http://imdb.com/tas542121512"));
         peliculas.add(new Pelicula(this.hashCode(),"Mucho Mucho 1","Una pelicula no para cualquier2", reparto, new Atributos(50, 2020), "Comedia","http://imdb.com/tas542121512"));
         videotecas.add(new Videoteca(1,"La hueca tuerta", "Madrid", peliculas, "04/02/2020"));
-
+        //Intentamos guardar en un archivo .txt
         Lector.guardar(videotecas,"Readme.txt");
         expectedEx.expect(VDException.class);
         expectedEx.expectMessage("El fichero no es un .json");
 
         throw new VDException("El fichero no es un .json");
     }
+
+
 
     @Test
     public void findUnaVideotecaIgual() {
