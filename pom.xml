@@ -144,14 +144,6 @@
 				<groupId>org.eclipse.jetty</groupId>
 				<artifactId>jetty-maven-plugin</artifactId>
 				<version>${jetty.plugin.version}</version>
-				<configuration>
-					<httpConnector>
-						<port>8080</port>
-					</httpConnector>
-					<scanIntervalSeconds>2</scanIntervalSeconds>
-					<stopKey>foo</stopKey>
-					<stopPort>8889</stopPort>
-				</configuration>
 			</plugin>
 
 			<plugin>
@@ -169,7 +161,7 @@
 								<artifactItem>
 									<groupId>org.eclipse.jetty</groupId>
 									<artifactId>jetty-runner</artifactId>
-									<version>9.3.3.v20150827</version>
+									<version>9.4.12.v20180830</version>
 									<destFileName>jetty-runner.jar</destFileName>
 								</artifactItem>
 							</artifactItems>
