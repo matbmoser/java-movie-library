@@ -907,7 +907,7 @@ public class MyUI extends UI {
         formulario.setSizeFull();
         //Realizamos un filtrado para comprobar si la información esta de acorde
         addButton.addClickListener(click->{
-            int camposValidos = 0; //Se espera obtener 7
+            int camposValidos = 0; //Se espera obtener
 
             //---------------------------------------------------------------
             if(tituloP.getValue().isEmpty()){
@@ -1194,7 +1194,7 @@ public class MyUI extends UI {
         return true;
     }
     //Función responsable de seleccionar una viedeoteca y abrir su menu
-    private void select(VaadinRequest vaadinRequest, int id, List<Videoteca> videotecas) throws VDException {
+    public void select(VaadinRequest vaadinRequest, int id, List<Videoteca> videotecas) throws VDException {
         if(id < 0){ //Si la ID es negativa
             throw new VDException("La Videoteca seleccionada no es válida!");
         }else{
