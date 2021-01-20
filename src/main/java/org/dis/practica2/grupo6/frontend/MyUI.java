@@ -15,7 +15,9 @@ import org.dis.practica2.grupo6.backend.*;
 
 import javax.servlet.annotation.WebServlet;
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -304,6 +306,40 @@ public class MyUI extends UI {
         gridPeliculas.addColumn(Pelicula::getEnlace).setCaption("Enlace");
         gridContainer.setSizeFull();
         gridPeliculas.setSizeFull();
+        gridPeliculas.getEditor().setEnabled(true);
+        gridPeliculas.addItemClickListener(e->{
+            Atributos att = e.getItem().getAtributos();
+            Window subWindow = new Window("Detalles Pelicula: " +e.getItem().getTitulo());
+            subWindow.setModal(true);
+            subWindow.setDraggable(false);
+            subWindow.setResizable(false);
+            subWindow.setWidth("500px");
+            subWindow.setHeight("300px");
+            VerticalLayout subContent = new VerticalLayout();
+            subWindow.setContent(subContent);
+
+            // Put some components in it
+            subContent.addComponent(new Label("Detalles:"));
+            subContent.addComponent(new Label("Duración: "+ att.getDuracion() + " mins"));
+            subContent.addComponent(new Label("Año de Estreno: "+ att.getAno()));
+
+            Button button = new Button("Editar/Borrar");
+            button.addClickListener(d->{
+                subWindow.close();
+                editar(e.getItem(),videoteca,vaadinRequest,videotecas);
+            });
+            subContent.addComponent(button);
+            // Center it in the browser window
+            subWindow.center();
+
+            // Open it in the UI
+            addWindow(subWindow);
+        });
+        gridPeliculas.getEditor().setSaveCaption("Editar/Borrar");
+        gridPeliculas.getEditor().setCancelCaption("Cancelar");
+        gridPeliculas.getEditor().addSaveListener(e->{
+            editar(e.getBean(), videoteca,vaadinRequest, videotecas);
+        });
         gridContainer.addComponent(gridPeliculas);
         Label titulo = new Label("Añadir una pelicula:");
         TextField tituloP = new TextField();
@@ -317,11 +353,13 @@ public class MyUI extends UI {
         enlace.setPlaceholder("Enlace");
         TextField min = new TextField();
         min.setCaption("Atributos:");
+        min.setValue("0");
         min.setPlaceholder("Minutos de Duración");
         min.setId("minutos");
         com.vaadin.ui.JavaScript.getCurrent().execute("document.getElementById('minutos').setAttribute('type', 'number')");
         TextField ano = new TextField();
         ano.setPlaceholder("Año de estreno");
+        ano.setValue("0");
         ano.setId("anos");
         com.vaadin.ui.JavaScript.getCurrent().execute("document.getElementById('anos').setAttribute('type', 'number')");
         TextField numActores = new TextField();
@@ -601,6 +639,7 @@ public class MyUI extends UI {
                 peli.setEnlace(enlace.getValue());
                 peli.setId(peli.hashCode());
                 videoteca.getPeliculas().add(peli);
+                videoteca.setFecha(new SimpleDateFormat("dd/MM/yyyy").format(new Date())); //Añadimos la fecha actual y la formateamos
                 videotecas.add(videoteca.getId()-1,videoteca);
                 guardar(videotecas, "peliculas.json",false);
                 peliculas(videoteca,vaadinRequest,videotecas);
@@ -619,6 +658,402 @@ public class MyUI extends UI {
         layout.addComponents(tabpelis);
         setContent(layout);
     }
+    public void editar(Pelicula peli, Videoteca videoteca, VaadinRequest vaadinRequest, List<Videoteca> videotecas){
+        Page.getCurrent().setTitle("Pelicula: "+peli.getTitulo());
+        final VerticalLayout layout = new VerticalLayout();
+        layout.setSizeFull();
+        layout.addStyleName("scrollable");
+        layout.setResponsive(true);
+        final HorizontalLayout deleteContainer = new HorizontalLayout();
+        final VerticalLayout addContainer = new VerticalLayout();
+        addContainer.addStyleName("scrollable");
+        final HorizontalLayout returnContainer = new HorizontalLayout();
+        final VerticalLayout actoresContainer = new VerticalLayout();
+        actoresContainer.addStyleName("scrollable");
+
+        Label titulo = new Label("Editar pelicula: ["+peli.getTitulo()+"]");
+        TextField tituloP = new TextField();
+        tituloP.setPlaceholder("Titulo");
+        tituloP.setValue(peli.getTitulo());
+        com.vaadin.ui.TextArea sinopsisP = new com.vaadin.ui.TextArea();
+        sinopsisP.setRows(4);
+        sinopsisP.setPlaceholder("Sinopsis");
+        sinopsisP.setValue(peli.getSinopsis());
+        TextField genero = new TextField();
+        genero.setPlaceholder("Género");
+        genero.setValue(peli.getGenero());
+        TextField enlace = new TextField();
+        enlace.setPlaceholder("Enlace");
+        enlace.setValue(peli.getEnlace());
+        TextField min = new TextField();
+        Atributos att = peli.getAtributos();
+        min.setCaption("Atributos:");
+        min.setPlaceholder("Minutos de Duración");
+        min.setId("minutos");
+        min.setValue(String.valueOf(att.getDuracion()));
+        com.vaadin.ui.JavaScript.getCurrent().execute("document.getElementById('minutos').setAttribute('type', 'number')");
+        TextField ano = new TextField();
+        ano.setPlaceholder("Año de estreno");
+        ano.setId("anos");
+        ano.setValue(String.valueOf(att.getAno()));
+        com.vaadin.ui.JavaScript.getCurrent().execute("document.getElementById('anos').setAttribute('type', 'number')");
+        List<Actor> actores = peli.getReparto();
+        TextField numActores = new TextField();
+        numActores.setCaption("[1-20] Actores");
+        numActores.setPlaceholder("Número de Actores");
+        numActores.setValue(String.valueOf(actores.size()));
+        numActores.setId("numActores");
+        com.vaadin.ui.JavaScript.getCurrent().execute("document.getElementById('numActores').setAttribute('type', 'number')");
+        actoresContainer.setResponsive(true);
+        for( int i = 0;i < actores.size();i++) {
+            FormLayout actorForm = new FormLayout();
+            actorForm.setCaption("Actor "+ i);
+            TextField nomActor = new TextField();
+            nomActor.setValue(actores.get(i).getNombre());
+            nomActor.setPlaceholder("Nombre Actor");
+            TextField enlaceActor = new TextField();
+            enlaceActor.setPlaceholder("Enlace Wikipedia");
+            enlaceActor.setValue(actores.get(i).getEnlace());
+            nomActor.setId("" + i);
+            nomActor.addValueChangeListener(l -> {
+                if (!nomActor.getValue().isEmpty()) {
+                    if (hasDigits(nomActor.getValue())) {
+                        nomActor.setIcon(VaadinIcons.WARNING);
+                        nomActor.setStyleName("fail");
+                        nomActor.setComponentError(new UserError("No se admiten números"));
+                        actores.get(Integer.parseInt(nomActor.getId())).setNombre("");
+                    } else {
+                        nomActor.setIcon(VaadinIcons.CHECK);
+                        nomActor.setStyleName("sucess");
+                        nomActor.setComponentError(null);
+                        actores.get(Integer.parseInt(nomActor.getId())).setNombre(nomActor.getValue());
+                    }
+                } else {
+                    nomActor.setIcon(VaadinIcons.WARNING);
+                    nomActor.setStyleName("fail");
+                    nomActor.setComponentError(new UserError("No puede estar vacio"));
+                    actores.get(Integer.parseInt(nomActor.getId())).setNombre("");
+                }
+            });
+            nomActor.setPlaceholder("Nombre Actor");
+            enlaceActor.setPlaceholder("Enlace Wikipedia");
+            enlaceActor.setId("" + 0);
+            enlaceActor.addValueChangeListener(l -> {
+                if (!enlaceActor.getValue().isEmpty()) {
+                    enlaceActor.setIcon(VaadinIcons.CHECK);
+                    enlaceActor.setStyleName("sucess");
+                    enlaceActor.setComponentError(null);
+                    actores.get(Integer.parseInt(enlaceActor.getId())).setEnlace(enlaceActor.getValue());
+                } else {
+                    enlaceActor.setIcon(VaadinIcons.WARNING);
+                    enlaceActor.setStyleName("fail");
+                    enlaceActor.setComponentError(new UserError("No puede estar vacio"));
+                    actores.get(Integer.parseInt(enlaceActor.getId())).setEnlace("");
+                }
+            });
+            actorForm.addComponents(nomActor, enlaceActor);
+            actoresContainer.addComponent(actorForm);
+        }
+        numActores.addValueChangeListener(e ->{
+            try{
+                int num = Integer.parseInt(numActores.getValue());
+                if(num > 0 && num <= 20) {
+                    actoresContainer.removeAllComponents();
+                    actores.clear();
+                    for (int i = 0; i < num; i++) {
+                        Actor actor = new Actor("","");
+                        actores.add(i,actor);
+                        FormLayout actorForm1 = new FormLayout();
+                        actorForm1.setCaption("Actor "+ (i+1));
+                        TextField nomActor1 = new TextField();
+                        nomActor1.setId(""+i);
+                        nomActor1.addValueChangeListener(l->{
+                            if(!nomActor1.getValue().isEmpty()) {
+                                if (hasDigits(nomActor1.getValue())) {
+                                    nomActor1.setIcon(VaadinIcons.WARNING);
+                                    nomActor1.setStyleName("fail");
+                                    nomActor1.setComponentError(new UserError("No se admiten números"));
+                                    actores.get(Integer.parseInt(nomActor1.getId())).setNombre("");
+                                } else {
+                                    nomActor1.setIcon(VaadinIcons.CHECK);
+                                    nomActor1.setStyleName("sucess");
+                                    nomActor1.setComponentError(null);
+                                    actores.get(Integer.parseInt(nomActor1.getId())).setNombre(nomActor1.getValue());
+                                }
+                            }else{
+                                nomActor1.setIcon(VaadinIcons.WARNING);
+                                nomActor1.setStyleName("fail");
+                                nomActor1.setComponentError(new UserError("No puede estar vacio"));
+                                actores.get(Integer.parseInt(nomActor1.getId())).setNombre("");
+                            }
+                        });
+                        nomActor1.setPlaceholder("Nombre Actor");
+                        TextField enlaceActor1 = new TextField();
+                        enlaceActor1.setPlaceholder("Enlace Wikipedia");
+                        enlaceActor1.setId(""+i);
+                        enlaceActor1.addValueChangeListener(l->{
+                            if(!enlaceActor1.getValue().isEmpty()) {
+                                enlaceActor1.setIcon(VaadinIcons.CHECK);
+                                enlaceActor1.setStyleName("sucess");
+                                enlaceActor1.setComponentError(null);
+                                actores.get(Integer.parseInt(enlaceActor1.getId())).setEnlace(enlaceActor1.getValue());
+                            }else{
+                                enlaceActor1.setIcon(VaadinIcons.WARNING);
+                                enlaceActor1.setStyleName("fail");
+                                enlaceActor1.setComponentError(new UserError("No puede estar vacio"));
+                                actores.get(Integer.parseInt(enlaceActor1.getId())).setEnlace("");
+                            }
+                        });
+                        actorForm1.addComponents(nomActor1, enlaceActor1);
+                        actoresContainer.addComponent(actorForm1);
+                    }
+                }else{
+                    Notification notif = new Notification("Warning","El valor debe estar entre 1 y 20",Notification.Type.WARNING_MESSAGE);
+                    notif.setDelayMsec(1000);
+                    notif.setPosition(Position.TOP_CENTER);
+                    notif.setIcon(VaadinIcons.WARNING);
+                    notif.show(Page.getCurrent());
+                }
+            }catch(Exception exception){
+                Notification notif = new Notification("Warning","No se admiten caracteres o que este vacio!",Notification.Type.WARNING_MESSAGE);
+                notif.setDelayMsec(1000);
+                notif.setPosition(Position.TOP_CENTER);
+                notif.setIcon(VaadinIcons.WARNING);
+                notif.show(Page.getCurrent());
+            }
+        });
+        Button addButton = new Button("Editar Pelicula");
+        addContainer.addComponents(titulo,tituloP, sinopsisP, genero,enlace,min, ano, numActores,addButton);
+        HorizontalLayout formulario = new HorizontalLayout();
+        formulario.addComponents(addContainer, actoresContainer);
+        formulario.setSizeFull();
+        addButton.addClickListener(click->{
+            int camposValidos = 0;
+            if(tituloP.getValue().isEmpty()){
+                tituloP.setIcon(VaadinIcons.WARNING);
+                tituloP.setStyleName("fail");
+                tituloP.setComponentError(new UserError("No puede estar vacio"));
+            }else{
+                tituloP.setIcon(VaadinIcons.CHECK);
+                tituloP.setStyleName("sucess");
+                tituloP.setComponentError(null);
+                camposValidos++;
+            }
+            if(sinopsisP.getValue().isEmpty()){
+                sinopsisP.setIcon(VaadinIcons.WARNING);
+                sinopsisP.setStyleName("fail");
+                sinopsisP.setComponentError(new UserError("No puede estar vacio"));
+            }else{
+                sinopsisP.setIcon(VaadinIcons.CHECK);
+                sinopsisP.setStyleName("sucess");
+                sinopsisP.setComponentError(null);
+                camposValidos++;
+            }
+            if(isNumeric(genero.getValue()) && !genero.getValue().isEmpty()){
+                genero.setIcon(VaadinIcons.WARNING);
+                genero.setStyleName("fail");
+                genero.setComponentError(new UserError("No puede contener números"));
+            }else{
+                genero.setIcon(VaadinIcons.CHECK);
+                genero.setStyleName("sucess");
+                genero.setComponentError(null);
+                camposValidos++;
+            }
+            if(enlace.getValue().isEmpty()){
+                enlace.setIcon(VaadinIcons.WARNING);
+                enlace.setStyleName("fail");
+                enlace.setComponentError(new UserError("No puede estar vacio"));
+            }else{
+                enlace.setIcon(VaadinIcons.CHECK);
+                enlace.setStyleName("sucess");
+                enlace.setComponentError(null);
+                camposValidos++;
+            }
+            if(!min.getValue().isEmpty()) {
+                if (!isNumeric(min.getValue())) {
+                    min.setIcon(VaadinIcons.WARNING);
+                    min.setStyleName("fail");
+                    min.setComponentError(new UserError("Solo se admiten numeros"));
+                } else {
+                    if (Integer.parseInt(min.getValue()) < 1 && Integer.parseInt(min.getValue()) > 1000) {
+                        min.setIcon(VaadinIcons.WARNING);
+                        min.setStyleName("fail");
+                        min.setComponentError(new UserError("No puede ser 0 o negativo o mayor que 1000"));
+                    } else {
+                        min.setIcon(VaadinIcons.CHECK);
+                        min.setStyleName("sucess");
+                        min.setComponentError(null);
+                        camposValidos++;
+                    }
+                }
+            }else{
+                min.setIcon(VaadinIcons.WARNING);
+                min.setStyleName("fail");
+                min.setComponentError(new UserError("No puede estar vacio"));
+            }
+            if(!ano.getValue().isEmpty()) {
+                if (!isNumeric(ano.getValue())){
+                    ano.setIcon(VaadinIcons.WARNING);
+                    ano.setStyleName("fail");
+                    ano.setComponentError(new UserError("Solo se admiten numeros"));
+                }else{
+                    if(Integer.parseInt(ano.getValue()) < 1850 || Integer.parseInt(ano.getValue()) > 3000) {
+                        ano.setIcon(VaadinIcons.WARNING);
+                        ano.setStyleName("fail");
+                        ano.setComponentError(new UserError("No puede ser menor que 1850 y mayor que 3000"));
+                    }else {
+                        ano.setComponentError(null);
+                        ano.setIcon(VaadinIcons.CHECK);
+                        ano.setStyleName("sucess");
+                        camposValidos++;
+                    }
+                }
+            }else{
+                ano.setIcon(VaadinIcons.WARNING);
+                ano.setStyleName("fail");
+                ano.setComponentError(new UserError("No puede estar vacio"));
+            }
+            if(!numActores.getValue().isEmpty()) {
+                if (!isNumeric(numActores.getValue())){
+                    numActores.setIcon(VaadinIcons.WARNING);
+                    numActores.setStyleName("fail");
+                    numActores.setComponentError(new UserError("Solo se admiten numeros"));
+                }else{
+                    if(Integer.parseInt(numActores.getValue()) < 1 || Integer.parseInt(numActores.getValue()) > 20) {
+                        numActores.setIcon(VaadinIcons.WARNING);
+                        numActores.setStyleName("fail");
+                        numActores.setComponentError(new UserError("No puede ser menor que 1 mayor que 20"));
+                    }else {
+                        if(actores.isEmpty()){
+                            numActores.setIcon(VaadinIcons.WARNING);
+                            numActores.setStyleName("fail");
+                            numActores.setComponentError(new UserError("Rellene los actores"));
+                        }else{
+                            int valid = 0;
+                            for (Actor actor : actores) {
+                                if (!("".equals(actor.getNombre())) && !isNumeric(actor.getNombre()) && !("".equals(actor.getEnlace()))) {
+                                    valid++;
+                                }
+                            }
+                            if(valid == actores.size()) {
+                                numActores.setComponentError(null);
+                                numActores.setIcon(VaadinIcons.CHECK);
+                                numActores.setStyleName("sucess");
+                                camposValidos++;
+                            }else{
+                                numActores.setIcon(VaadinIcons.WARNING);
+                                numActores.setStyleName("fail");
+                                numActores.setComponentError(new UserError("Rellene los actores correctamente"));
+                            }
+                        }
+                    }
+                }
+            }else{
+                numActores.setIcon(VaadinIcons.WARNING);
+                numActores.setStyleName("fail");
+                numActores.setComponentError(new UserError("No puede estar vacio o ser cero"));
+            }
+            if(camposValidos == 7){
+                Notification notif = new Notification("Pelicula Editada!", "["+tituloP.getValue()+"]", Notification.Type.HUMANIZED_MESSAGE);
+                notif.setDelayMsec(10000);
+                notif.setPosition(Position.BOTTOM_LEFT);
+                notif.setIcon(VaadinIcons.EDIT);
+                notif.show(Page.getCurrent());
+                Pelicula peli1 = new Pelicula();
+                peli1.setTitulo(tituloP.getValue());
+                peli1.setSinopsis(sinopsisP.getValue());
+                if(genero.getValue().isEmpty()){
+                    peli1.setGenero("");
+                }else {
+                    peli1.setGenero(genero.getValue());
+                }
+                peli1.setAtributos(new Atributos(Integer.parseInt(min.getValue()),Integer.parseInt(ano.getValue())));
+                peli1.setReparto(actores);
+                peli1.setEnlace(enlace.getValue());
+                int num = 0;
+                while(num < videoteca.getPeliculas().size()) {
+                    if(videoteca.getPeliculas().get(num).getId() == peli.getId()){
+                        break;
+                    }
+                    num++;
+                }
+                peli1.setId(peli.getId());
+                videoteca.getPeliculas().remove(num);
+                videoteca.getPeliculas().add(num, peli1);
+                videoteca.setFecha(new SimpleDateFormat("dd/MM/yyyy").format(new Date())); //Añadimos la fecha actual y la formateamos
+                videotecas.add(videoteca.getId()-1,videoteca);
+                guardar(videotecas, "peliculas.json",false);
+                peliculas(videoteca,vaadinRequest,videotecas);
+            }
+        });
+        TabSheet tabedit = new TabSheet();
+        deleteContainer.setCaption("Borrar");
+        returnContainer.setCaption("Volver");
+        tabedit.addTab(formulario, "Editar", VaadinIcons.EDIT);
+        tabedit.addTab(deleteContainer, "Borrar", VaadinIcons.TRASH);
+        tabedit.addTab(returnContainer, "Volver", VaadinIcons.ARROW_LEFT);
+        tabedit.addSelectedTabChangeListener(listener->{
+            if("Volver".equals(tabedit.getSelectedTab().getCaption())){
+                peliculas(videoteca,vaadinRequest,videotecas);
+            }
+            if("Borrar".equals(tabedit.getSelectedTab().getCaption())){
+                // Create a sub-window and set the content
+                Window subWindow = new Window("Borrar Pelicula");
+                subWindow.setModal(true);
+                subWindow.addCloseListener(e->{
+                    subWindow.close();
+                    peliculas(videoteca,vaadinRequest,videotecas);
+                });
+                subWindow.setDraggable(false);
+                subWindow.setResizable(false);
+
+                VerticalLayout subContent = new VerticalLayout();
+                subWindow.setContent(subContent);
+
+                // Put some components in it
+                subContent.addComponent(new Label("¿Estás seguro que quieres borrar?"));
+                subContent.addComponent(new Label("Pelicula: " +peli.getTitulo()));
+                Button bb = new Button("Borrar");
+                bb.addClickListener(e->{
+                    int num = 0;
+                    while(num < videoteca.getPeliculas().size()) {
+                        if(videoteca.getPeliculas().get(num).getId() == peli.getId()){
+                            break;
+                        }
+                        num++;
+                    }
+                    videoteca.getPeliculas().remove(num);
+                    videoteca.setFecha(new SimpleDateFormat("dd/MM/yyyy").format(new Date())); //Añadimos la fecha actual y la formateamos
+                    videotecas.add(videoteca.getId()-1,videoteca);
+                    guardar(videotecas, "peliculas.json",false);
+                    subWindow.close();
+                    Notification notif = new Notification("Pelicula Borrada!", "["+tituloP.getValue()+"]", Notification.Type.HUMANIZED_MESSAGE);
+                    notif.setDelayMsec(10000);
+                    notif.setPosition(Position.BOTTOM_LEFT);
+                    notif.setIcon(VaadinIcons.EXIT);
+                    notif.show(Page.getCurrent());
+                    peliculas(videoteca,vaadinRequest,videotecas);
+                });
+                bb.setStyleName("delete");
+                Button bb2 = new Button("No");
+                bb2.addClickListener(e->{
+                    subWindow.close();
+                    peliculas(videoteca,vaadinRequest,videotecas);
+                });
+                subContent.addComponents(bb2,bb);
+
+                // Center it in the browser window
+                subWindow.center();
+
+                // Open it in the UI
+                addWindow(subWindow);
+
+            }
+        });
+        layout.addComponents(tabedit);
+        setContent(layout);
+    }
+
     public static boolean hasDigits(String strNum){
         for(int i = 0; i < strNum.length(); i++){
             if(Character.isDigit(strNum.charAt(i))){

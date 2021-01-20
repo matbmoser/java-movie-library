@@ -15161,6 +15161,12 @@ div.v-layout.v-horizontal.v-widget {
 	border-color: transparent;
 }
 
+.mytheme .delete {
+	color: #fff;
+	background: #dc3545 !important;
+	border-color: #dc3545;
+}
+
 .mytheme .v-tabsheet-tabitemcell .v-caption {
 	margin: 0px 0;
 }
