@@ -294,7 +294,6 @@ public class MyUI extends UI {
         final HorizontalLayout returnContainer = new HorizontalLayout();
         final VerticalLayout actoresContainer = new VerticalLayout();
         actoresContainer.addStyleName("scrollable");
-        gridContainer.setCaption("Ver");
         List<Pelicula> peliculas = videoteca.getPeliculas();
         Grid<Pelicula> gridPeliculas = new Grid<>();
         gridPeliculas.setItems(peliculas);
@@ -341,6 +340,9 @@ public class MyUI extends UI {
             editar(e.getBean(), videoteca,vaadinRequest, videotecas);
         });
         gridContainer.addComponent(gridPeliculas);
+        Label label = new Label("**Haz click sobre cualquier campo de una pelicula para ver los detalles u editar o borrar");
+        VerticalLayout v1 = new VerticalLayout();
+        v1.addComponents(gridContainer,label);
         Label titulo = new Label("Añadir una pelicula:");
         TextField tituloP = new TextField();
         tituloP.setPlaceholder("Titulo");
@@ -353,19 +355,17 @@ public class MyUI extends UI {
         enlace.setPlaceholder("Enlace");
         TextField min = new TextField();
         min.setCaption("Atributos:");
-        min.setValue("0");
         min.setPlaceholder("Minutos de Duración");
         min.setId("minutos");
         com.vaadin.ui.JavaScript.getCurrent().execute("document.getElementById('minutos').setAttribute('type', 'number')");
         TextField ano = new TextField();
         ano.setPlaceholder("Año de estreno");
-        ano.setValue("0");
         ano.setId("anos");
         com.vaadin.ui.JavaScript.getCurrent().execute("document.getElementById('anos').setAttribute('type', 'number')");
         TextField numActores = new TextField();
         numActores.setCaption("[1-20] Actores");
         numActores.setPlaceholder("Número de Actores");
-        numActores.setValue("1");
+        numActores.setValue(String.valueOf(1));
         numActores.setId("numActores");
         com.vaadin.ui.JavaScript.getCurrent().execute("document.getElementById('numActores').setAttribute('type', 'number')");
         List<Actor> actores = new ArrayList<>();
@@ -647,7 +647,7 @@ public class MyUI extends UI {
         });
         returnContainer.setCaption("Volver");
         TabSheet tabpelis = new TabSheet();
-        tabpelis.addTab(gridContainer, "Ver", VaadinIcons.CHECK_SQUARE);
+        tabpelis.addTab(v1, "Ver", VaadinIcons.CHECK_SQUARE);
         tabpelis.addTab(formulario, "Añadir", VaadinIcons.PLUS);
         tabpelis.addTab(returnContainer, "Volver", VaadinIcons.ARROW_LEFT);
         tabpelis.addSelectedTabChangeListener(listener->{
@@ -707,7 +707,7 @@ public class MyUI extends UI {
         actoresContainer.setResponsive(true);
         for( int i = 0;i < actores.size();i++) {
             FormLayout actorForm = new FormLayout();
-            actorForm.setCaption("Actor "+ i);
+            actorForm.setCaption("Actor "+ (i+1));
             TextField nomActor = new TextField();
             nomActor.setValue(actores.get(i).getNombre());
             nomActor.setPlaceholder("Nombre Actor");
