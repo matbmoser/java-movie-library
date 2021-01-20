@@ -60,7 +60,7 @@ public class Lector {
                     }
                 }
             } catch (Exception e) { //Si se produce un error de parseo lo captamos
-                throw new VDException(e.getMessage());
+                throw new VDException("Se produjo un error de parseo");
             }
         }
     }
