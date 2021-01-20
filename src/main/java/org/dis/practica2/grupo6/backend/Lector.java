@@ -1,12 +1,10 @@
 package org.dis.practica2.grupo6.backend;
 
 import com.google.gson.*;
-import com.vaadin.server.FileResource;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 public class Lector {
 
@@ -64,28 +62,31 @@ public class Lector {
             }
         }
     }
-    public static List<Videoteca> guardar(List<Videoteca> videotecas,String NOM_FICHERO) throws VDException {
+    public static void guardar(List<Videoteca> videotecas, String NOM_FICHERO) throws VDException {
 
         //Instanciamos Gson
         Gson gson = new Gson();
         String nombre = NOM_FICHERO;
-        //Pasamos el objeto java a un string json
-        boolean b = false;
-        String misvideotecas = gson.toJson(videotecas);
-        misvideotecas = "{ \"videotecas\":"+ misvideotecas +"}";
-        try {
-            File file = new File(nombre);
-            try(FileWriter writer = new FileWriter(file, false);
-            BufferedWriter bw = new BufferedWriter(writer)){
-                bw.write(misvideotecas);
-                //Si se añade
-            }catch (Exception e){
-                throw new VDException("Error al escribir fichero", e.getCause());
+        if(nombre.endsWith(".json")) {
+            //Pasamos el objeto java a un string json
+            boolean b = false;
+            String misvideotecas = gson.toJson(videotecas);
+            misvideotecas = "{ \"videotecas\":" + misvideotecas + "}";
+            try {
+                File file = new File(nombre);
+                try (FileWriter writer = new FileWriter(file, false);
+                     BufferedWriter bw = new BufferedWriter(writer)) {
+                    bw.write(misvideotecas);
+                    //Si se añade
+                } catch (Exception e) {
+                    throw new VDException("Error al escribir fichero", e.getCause());
+                }
+            } catch (Exception e) {
+                throw new VDException("¡El fichero no existe!", e.getCause());
             }
-        }catch (Exception e){
-            throw new VDException("¡El fichero no existe!", e.getCause());
+        }else {
+            throw new VDException("El fichero no es un .json");
         }
-        return videotecas;
     }
     //Función responsable de verificar si una videoteca ya ha sido añadida o no independientemente de la ID
     public static boolean find(List<Videoteca> videotecas, Videoteca videoteca){
