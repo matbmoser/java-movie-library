@@ -73,8 +73,6 @@ public class LectorTest {
         throw new VDException("El fichero no es un .json");
     }
 
-
-
     @Test
     public void findUnaVideotecaIgual() {
         //Debemos comprobar si teniendo contenidos diferentes, pero mismos nombres y la misma localización, encuentra la videoteca
