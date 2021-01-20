@@ -6,7 +6,7 @@
 	<groupId>org.dis.practica2.grupo6.frontend</groupId>
 	<artifactId>practica2</artifactId>
 	<packaging>war</packaging>
-	<version>1.0-SNAPSHOT</version>
+	<version>1.5-SNAPSHOT</version>
 	<name>practica2</name>
 
 	<prerequisites>
